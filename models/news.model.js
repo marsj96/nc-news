@@ -9,7 +9,7 @@ exports.fetchTopics = () => {
 
 exports.fetchArticleById = (id) => {
 
-    if(id.match(/[a-z]/i)) {
+    if(id.match(/\D/)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 

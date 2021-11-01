@@ -44,6 +44,7 @@ describe('APP', () => {
                 .get('/api/articles/2')
                 .expect(200)
                 .then(({body: {articles}})=>{
+                    console.log(articles)
                     expect(articles).toMatchObject({
                         article_id: expect.any(Number),
                         title: expect.any(String),
@@ -67,7 +68,7 @@ describe('APP', () => {
                     expect(text).toEqual("Not found")
                 })
             });
-            it('Status - 400, Should respond with bad request when passed an article_id as a character instead of a number', () => {
+            it('Status - 400, Should respond with bad request when passed an article_id that is not a number', () => {
                 return request(app)
                 .get('/api/articles/bad-request')
                 .expect(400)
@@ -76,8 +77,7 @@ describe('APP', () => {
                 })
             });
         });
-        });    
-    
+    });    
 });
 
 afterAll(() => db.end());
