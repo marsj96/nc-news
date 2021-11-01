@@ -1,17 +1,18 @@
 const db = require('../connection')
+const format = require('pg-format');
 
 const seed = (data) => {
   const { articleData, commentData, topicData, userData } = data;
   // 1. create tables
-    return db.query("DROP TABLE IF EXISTS topics")
-  .then(()=>{
-    return db.query("DROP TABLE IF EXISTS users")
-  })
+    return db.query("DROP TABLE IF EXISTS comments")
   .then(()=>{
     return db.query("DROP TABLE IF EXISTS articles")
   })
   .then(()=>{
-    return db.query("DROP TABLE IF EXISTS comments")
+    return db.query("DROP TABLE IF EXISTS users")
+  })
+  .then(()=>{
+    return db.query("DROP TABLE IF EXISTS topics")
   })
   .then(()=>{
     return db.query(`
@@ -54,6 +55,76 @@ const seed = (data) => {
     `)
   })
   // 2. insert data
+  .then(()=>{
+    const topicQuery = format(`INSERT INTO topics
+    (slug, description)
+    VALUES
+    %L
+    RETURNING *;`,
+    topicData.map((topic)=>{
+      return [
+        topic.slug,
+        topic.description
+      ]
+    })
+    );
+    return db.query(topicQuery)
+  })
+  .then(()=>{
+    const userQuery = format(
+      `INSERT INTO users
+      (username, avatar_url, name)
+      VALUES
+      %L
+      RETURNING *;`,
+      userData.map((user)=>{
+        return [
+          user.username,
+          user.avatar_url,
+          user.name
+        ]
+      })
+    )
+    return db.query(userQuery)
+  })
+  .then(()=>{
+    const articleQuery = format(`
+    INSERT INTO articles
+    (title, body, votes, topic, author, created_at)
+    VALUES
+    %L
+    RETURNING *;`,
+    articleData.map((article)=>{
+      return [
+        article.title,
+        article.body,
+        article.votes,
+        article.topic,
+        article.author,
+        article.created_at
+      ]
+    })
+    )
+    return db.query(articleQuery)
+  })
+  .then(()=>{
+    const commentQuery = format(`
+    INSERT INTO comments
+    (author, article_id, votes, created_at, body)
+    VALUES
+    %L
+    RETURNING *;`,
+    commentData.map((comment)=>{
+      return [
+        comment.author,
+        comment.article_id,
+        comment.votes,
+        comment.created_at,
+        comment.body
+      ]
+    }))
+    return db.query(commentQuery)
+  })
 };
 
 module.exports = seed;
