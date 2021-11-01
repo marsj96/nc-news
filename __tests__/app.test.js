@@ -9,6 +9,17 @@ const articles = require('../db/data/test-data/articles.js');
 beforeEach(() => seed(testData));
 
 describe('APP', () => {
+    describe('/', () => {
+            it('Status - 404, Should respond with invalid url when passed an incorrect URL', () => {
+                return request(app)
+                .get('/bad-path')
+                .expect(404)
+                .then(({body})=>{
+                    expect(body.error).toEqual("Invalid URL")
+                })
+            });
+        
+    });
     describe('/api/topics', () => {
         describe('GET Request', () => {
             it('Status - 200, should respond with an array of objects containing "slug" and "description"', () => {
@@ -25,6 +36,7 @@ describe('APP', () => {
                 })
             });
         });
+    });
     describe('/api/articles/:article_id', () => {
         describe('GET Request', () => {
             it('Status - 200, Should respond with an article with information from articles table, as well as comment count', () => {
@@ -65,7 +77,7 @@ describe('APP', () => {
             });
         });
         });    
-    });
+    
 });
 
 afterAll(() => db.end());
