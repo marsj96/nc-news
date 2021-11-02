@@ -1,5 +1,4 @@
-const { fetchTopics, fetchArticleById, changeArticleById } = require("../models/news.model")
-const { checkObjectLength } = require("../utils")
+const { fetchTopics, fetchArticleById, changeArticleById, fetchCommentsByArticleId } = require("../models/news.model")
 
 exports.getTopics = (req, res, next) => {
     fetchTopics()
@@ -31,4 +30,14 @@ exports.patchArticleById = (req, res, next) => {
         res.status(201).send({article: article})
     })
     .catch(next)
+}
+
+exports.getCommentsByArticleId = (req, res, next) => {
+
+    const {article_id: id} = req.params
+
+    fetchCommentsByArticleId(id)
+    .then((comments)=>{
+        console.log(comments)
+    })
 }

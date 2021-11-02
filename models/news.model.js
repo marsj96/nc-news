@@ -79,3 +79,7 @@ exports.changeArticleById = (id, votes) => {
     
 
 }
+
+exports.fetchCommentsByArticleId = () => {
+    
+}
