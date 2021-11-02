@@ -132,6 +132,7 @@ exports.fetchArticles = () => {
                 title: article.title,
                 body: article.body,
                 topic: article.topic,
+                votes: article.votes,
                 author: article.author,
                 created_at: article.created_at,
                 comment_count: comment_count
