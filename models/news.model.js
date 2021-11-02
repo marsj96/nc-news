@@ -82,9 +82,18 @@ exports.changeArticleById = (id, votes) => {
 }
 
 exports.fetchCommentsByArticleId = (id) => {
-    
+
+    //checks that the passed id is a digit
+    if(id.match(/\D/)) {
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+
     return db.query(`SELECT * FROM comments WHERE article_id = $1`, [id])
     .then(({rows})=>{
+
+    if(rows.length === 0) {
+        return Promise.reject({status:404, msg: "Not found"})
+    } else {
         const commentArr = rows.map((comment)=>{
             return {
                 comment_id: comment.comment_id,
@@ -95,5 +104,6 @@ exports.fetchCommentsByArticleId = (id) => {
             }
         })
         return commentArr
+        } 
     })
 }

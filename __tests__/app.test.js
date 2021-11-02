@@ -146,6 +146,14 @@ describe('APP', () => {
                         expect(text).toEqual("Bad request")
                     })
                 });
+                it('Status - 400 (patch), Should respond with bad request when passed an article_id that is not a number', () => {
+                    return request(app)
+                    .get('/api/articles/not-a-number!')
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
             });
         });
     }); 
@@ -157,7 +165,6 @@ describe('APP', () => {
                 .expect(200)
                 .then(({body})=>{
                     body.comments.forEach((comment)=>{
-                        console.log(comment)
                         expect(comment).toMatchObject({
                             comment_id: expect.any(Number),
                             author: expect.any(String),
@@ -167,6 +174,24 @@ describe('APP', () => {
                         })
                     })
                 })
+            });
+            describe('ERRORS', () => {
+                it('Status 404, Should respond with status 404 and Not found when passed an article_id that does not exist', () => {
+                    return request(app)
+                    .get('/api/articles/999/comments')
+                    .expect(404)
+                    .then(({text})=>{
+                        expect(text).toEqual("Not found")
+                    })
+                });
+                it('Status 400, Should respond with status 404 and bad request when passed an article_id that is not a digit', () => {
+                    return request(app)
+                    .get('/api/articles/not-a-digit/comments')
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
             });
         });
     });
