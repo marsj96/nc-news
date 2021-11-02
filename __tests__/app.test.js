@@ -39,13 +39,12 @@ describe('APP', () => {
     });
     describe('/api/articles/:article_id', () => {
         describe('GET Request', () => {
-            it('Status - 200, Should respond with an article with information from articles table, as well as comment count', () => {
+            it('Status - 200, Should respond with an article with the correct information from articles table, as well as comment count', () => {
                 return request(app)
                 .get('/api/articles/2')
                 .expect(200)
-                .then(({body: {articles}})=>{
-                    console.log(articles)
-                    expect(articles).toMatchObject({
+                .then(({body: {article}})=>{
+                    expect(article).toMatchObject({
                         article_id: expect.any(Number),
                         title: expect.any(String),
                         body: expect.any(String),
@@ -56,6 +55,28 @@ describe('APP', () => {
                         comment_count: expect.any(Number)
                     })
                     
+                })
+            });
+        });
+        describe('PATCH', () => {
+            it('Status - 201, Should respond with the article with the updated vote count', () => {
+                const vote = { "inc_votes" : 150 }
+                return request(app)
+                .patch('/api/articles/4')
+                .send(vote)
+                .expect(201)
+                .then(({body: {article}})=>{
+                    console.log(article)
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        body: expect.any(String),
+                        votes: expect.any(Number),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String)
+                    })
+                    expect(article.votes).toEqual(vote.inc_votes)
                 })
             });
         });
@@ -70,14 +91,14 @@ describe('APP', () => {
             });
             it('Status - 400, Should respond with bad request when passed an article_id that is not a number', () => {
                 return request(app)
-                .get('/api/articles/bad-request')
+                .get('/api/articles/not-a-number!')
                 .expect(400)
                 .then(({text})=>{
                     expect(text).toEqual("Bad request")
                 })
             });
         });
-    });    
+    }); 
 });
 
 afterAll(() => db.end());
