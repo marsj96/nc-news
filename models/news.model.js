@@ -122,47 +122,56 @@ exports.fetchCommentsByArticleId = (id) => {
 
 exports.fetchArticles = () => {
 
-    const comment_count = 0
-
-    //returns an array of all articles from DB and then maps a comment_count = 0 to each object within the array
-    const articlesPromise = db.query(`SELECT * FROM articles`)
-    .then(({rows})=>{
-        const articleWithCommentsCount = rows.map((article)=>{
-            return {
-                article_id: article.article_id,
-                title: article.title,
-                body: article.body,
-                topic: article.topic,
-                votes: article.votes,
-                author: article.author,
-                created_at: article.created_at,
-                comment_count: comment_count
-            }
-        })
-        return articleWithCommentsCount
-    })
-
-    //returns all comments within the DB
-    const commentsPromise = db.query(`SELECT * FROM comments`)
+    return db.query(`
+    SELECT articles.*, 
+    COUNT(comments.article_id) AS comment_count
+    FROM articles 
+    LEFT JOIN comments 
+    ON articles.article_id = comments.article_id 
+    GROUP BY articles.article_id;`)
     .then(({rows})=>{
         return rows
     })
 
-    const promiseArray = [articlesPromise, commentsPromise]
+    // //returns an array of all articles from DB and then maps a comment_count = 0 to each object within the array
+    // const articlesPromise = db.query(`SELECT * FROM articles`)
+    // .then(({rows})=>{
+    //     const articleWithCommentsCount = rows.map((article)=>{
+    //         return {
+    //             article_id: article.article_id,
+    //             title: article.title,
+    //             body: article.body,
+    //             topic: article.topic,
+    //             votes: article.votes,
+    //             author: article.author,
+    //             created_at: article.created_at,
+    //             comment_count: 0
+    //         }
+    //     })
+    //     return articleWithCommentsCount
+    // })
 
-    //returns the array of articles with the comment_count includes
-    return Promise.all(promiseArray)
-    .then(([articles, comments])=>{
-        //iterate through each comment in the array
-        comments.forEach((comment)=>{
-            //map to a new array incrementing by +1 each time the article.article_id matches the comment.article_id
-            articles.map((article)=>{
-                if(comment.article_id === article.article_id) {
-                    article.comment_count++
-                }
-            })
-        })
-        return articles
-    })
+    // //returns all comments within the DB
+    // const commentsPromise = db.query(`SELECT * FROM comments`)
+    // .then(({rows})=>{
+    //     return rows
+    // })
+
+    // const promiseArray = [articlesPromise, commentsPromise]
+
+    // //returns the array of articles with the comment_count includes
+    // return Promise.all(promiseArray)
+    // .then(([articles, comments])=>{
+    //     //iterate through each comment in the array
+    //     comments.forEach((comment)=>{
+    //         //map to a new array incrementing by +1 each time the article.article_id matches the comment.article_id
+    //         articles.map((article)=>{
+    //             if(comment.article_id === article.article_id) {
+    //                 article.comment_count++
+    //             }
+    //         })
+    //     })
+    //     return articles
+    // })
 
 }
