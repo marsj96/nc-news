@@ -57,8 +57,26 @@ describe('APP', () => {
                     
                 })
             });
+            describe('ERRORS', () => {
+                it('Status - 404, Should respond with invalid request when passed an article_id not within our DB', () => {
+                    return request(app)
+                    .get('/api/articles/999')
+                    .expect(404)
+                    .then(({text})=>{
+                        expect(text).toEqual("Not found")
+                    })
+                });
+                it('Status - 400, Should respond with bad request when passed an article_id that is not a number', () => {
+                    return request(app)
+                    .get('/api/articles/not-a-number!')
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
+            });
         });
-        describe('PATCH', () => {
+        describe('PATCH Request', () => {
             it('Status - 201, Should respond with the article with the incremented vote count', () => {
                 const vote = { "inc_votes" : 150 }
                 return request(app)
@@ -97,53 +115,37 @@ describe('APP', () => {
                     expect(article.votes).toEqual(vote.inc_votes)
                 })
             });
-        });
-        describe('ERRORS', () => {
-            it('Status - 404, Should respond with invalid request when passed an article_id not within our DB', () => {
-                return request(app)
-                .get('/api/articles/999')
-                .expect(404)
-                .then(({text})=>{
-                    expect(text).toEqual("Not found")
-                })
-            });
-            it('Status - 400, Should respond with bad request when passed an article_id that is not a number', () => {
-                return request(app)
-                .get('/api/articles/not-a-number!')
-                .expect(400)
-                .then(({text})=>{
-                    expect(text).toEqual("Bad request")
-                })
-            });
-            it('Status - 400 (patch), Should respond with bad request when passed an object with a length that is not equal to 1', () => {
-                const testObj = {inc_votes: 200, name: "Jack"}
-                return request(app)
-                .patch('/api/articles/3')
-                .send(testObj)
-                .expect(400)
-                .then(({text})=>{
-                    expect(text).toEqual("Bad request")
-                })
-            });
-            it('Status - 400 (patch), Should respond with a bad request when pased an invalid inc_votes value', () => {
-                const testObj = {inc_votes: "not-a-number"}
-                return request(app)
-                .patch('/api/articles/3')
-                .send(testObj)
-                .expect(400)
-                .then(({text})=>{
-                    expect(text).toEqual("Bad request")
-                })
-            });
-            it('Status - 400 (patch), Should respond with bad request when the request body does not contain "inc_votes"', () => {
-                const testObj = {not_inc_votes: 25}
-                return request(app)
-                .patch('/api/articles/3')
-                .send(testObj)
-                .expect(400)
-                .then(({text})=>{
-                    expect(text).toEqual("Bad request")
-                })
+            describe('ERRORS', () => {
+                it('Status - 400 (patch), Should respond with bad request when passed an object with a length that is not equal to 1', () => {
+                    const testObj = {inc_votes: 200, name: "Jack"}
+                    return request(app)
+                    .patch('/api/articles/3')
+                    .send(testObj)
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
+                it('Status - 400 (patch), Should respond with a bad request when pased an invalid inc_votes value', () => {
+                    const testObj = {inc_votes: "not-a-number"}
+                    return request(app)
+                    .patch('/api/articles/3')
+                    .send(testObj)
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
+                it('Status - 400 (patch), Should respond with bad request when the request body does not contain "inc_votes"', () => {
+                    const testObj = {not_inc_votes: 25}
+                    return request(app)
+                    .patch('/api/articles/3')
+                    .send(testObj)
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
             });
         });
     }); 
