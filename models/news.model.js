@@ -11,27 +11,34 @@ exports.fetchTopics = () => {
 
 exports.fetchArticleById = (id) => {
 
+    //checks if the id passed is a digit
     if(id.match(/\D/)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
+    //creates a promise for the query to return the article matching the passed id
     const articlePromise = db.query(`SELECT * FROM articles WHERE article_id = $1`, [id])
     .then(({rows: articles})=>{
         return articles
     })
 
+    //creates a promise for the query to return the comments matching the passed id
     const commentCountPromise = db.query(`SELECT * FROM comments WHERE article_id = $1`, [id])
     .then(({rows})=>{
         return rows.length
     })
 
+    //creates an array to pass into the below Promise.all
     const promiseArray = [articlePromise, commentCountPromise]
 
+    //once the above promises have returned returns the value
     return Promise.all(promiseArray)
+    //destructures the returned array into articles and count
     .then(([articles, count])=>{
         if(articles.length === 0) {
             return Promise.reject({status:404, msg: "Not found"})
         } else {
+            //adds the property comment_count to the article that has been returned
             articles[0].comment_count = count
             return articles[0]
         }      
@@ -88,12 +95,15 @@ exports.fetchCommentsByArticleId = (id) => {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
+    //returns the commments when the passed article_id matches the passed id
     return db.query(`SELECT * FROM comments WHERE article_id = $1`, [id])
     .then(({rows})=>{
 
+    //checks if the rows returned has a length of greater than  0, if not the article does not have any comments/does not exists
     if(rows.length === 0) {
         return Promise.reject({status:404, msg: "Not found"})
     } else {
+        //iterates through each of the comments to take out the article_id
         const commentArr = rows.map((comment)=>{
             return {
                 comment_id: comment.comment_id,
