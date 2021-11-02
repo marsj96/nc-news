@@ -2,6 +2,7 @@ const { getArticleById, patchArticleById, getCommentsByArticleId } = require('..
 
 const articlesRouter = require('express').Router()
 
+articlesRouter.route('/').get()
 articlesRouter.route('/:article_id').get(getArticleById)
 articlesRouter.route('/:article_id').patch(patchArticleById)
 articlesRouter.route('/:article_id/comments').get(getCommentsByArticleId)
