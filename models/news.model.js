@@ -1,5 +1,7 @@
 const db = require('../db/connection')
+const articles = require('../db/data/test-data/articles')
 const comments = require('../db/data/test-data/comments')
+const articlesRouter = require('../routes/articles.router')
 const { checkObjectLength } = require('../utils')
 
 exports.fetchTopics = () => {
@@ -120,9 +122,41 @@ exports.fetchCommentsByArticleId = (id) => {
 
 exports.fetchArticles = () => {
 
-    return db.query(`SELECT * FROM articles`)
+    const comment_count = 0
+
+    const articlesPromise = db.query(`SELECT * FROM articles`)
+    .then(({rows})=>{
+        const articleWithCommentsCount = rows.map((article)=>{
+            return {
+                article_id: article.article_id,
+                title: article.title,
+                body: article.body,
+                topic: article.topic,
+                author: article.author,
+                created_at: article.created_at,
+                comment_count: comment_count
+            }
+        })
+        return articleWithCommentsCount
+    })
+
+    const commentsPromise = db.query(`SELECT * FROM comments`)
     .then(({rows})=>{
         return rows
+    })
+
+    const promiseArray = [articlesPromise, commentsPromise]
+
+    return Promise.all(promiseArray)
+    .then(([articles, comments])=>{
+        comments.forEach((comment)=>{
+            articles.map((article)=>{
+                if(comment.article_id === article.article_id) {
+                    article.comment_count++
+                }
+            })
+        })
+        return articles
     })
 
 }
