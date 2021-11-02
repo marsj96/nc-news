@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const comments = require('../db/data/test-data/comments')
 const { checkObjectLength } = require('../utils')
 
 exports.fetchTopics = () => {
@@ -80,6 +81,19 @@ exports.changeArticleById = (id, votes) => {
 
 }
 
-exports.fetchCommentsByArticleId = () => {
+exports.fetchCommentsByArticleId = (id) => {
     
+    return db.query(`SELECT * FROM comments WHERE article_id = $1`, [id])
+    .then(({rows})=>{
+        const commentArr = rows.map((comment)=>{
+            return {
+                comment_id: comment.comment_id,
+                author: comment.author,
+                votes: comment.votes,
+                created_at: comment.created_at,
+                body: comment.body
+            }
+        })
+        return commentArr
+    })
 }

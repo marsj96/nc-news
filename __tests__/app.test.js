@@ -5,6 +5,7 @@ const testData = require('../db/data/test-data/index.js');
 const seed = require('../db/seeds/seed.js');
 const app = require('../app');
 const articles = require('../db/data/test-data/articles.js');
+const comments = require('../db/data/test-data/comments.js');
 
 beforeEach(() => seed(testData));
 
@@ -152,8 +153,17 @@ describe('APP', () => {
                 return request(app)
                 .get('/api/articles/3/comments')
                 .expect(200)
-                .then(({rows})=>{
-                    console.log(rows)
+                .then(({body})=>{
+                    body.comments.forEach((comment)=>{
+                        console.log(comment)
+                        expect(comment).toMatchObject({
+                            comment_id: expect.any(Number),
+                            author: expect.any(String),
+                            votes: expect.any(Number),
+                            created_at: expect.any(String),
+                            body: expect.any(String)
+                        })
+                    })
                 })
             });
         });
