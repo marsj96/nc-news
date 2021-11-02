@@ -146,6 +146,18 @@ describe('APP', () => {
             });
         });
     }); 
+    describe('/api/articles/:article_id/comments', () => {
+        describe('GET Request', () => {
+            it('Status - 200, Should respond with an array of comments for the given article_id, which each of the corresponding properties for comments', () => {
+                return request(app)
+                .get('/api/articles/3/comments')
+                .expect(200)
+                .then(({rows})=>{
+                    console.log(rows)
+                })
+            });
+        });
+    });
 });
 
 afterAll(() => db.end());
