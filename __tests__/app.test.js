@@ -116,6 +116,16 @@ describe('APP', () => {
                     expect(text).toEqual("Bad request")
                 })
             });
+            it('Status - 400 (patch), Should respond with bad request when the request body does not contain "inc_votes"', () => {
+                const testObj = {not_inc_votes: 25}
+                return request(app)
+                .patch('/api/articles/3')
+                .send(testObj)
+                .expect(400)
+                .then(({text})=>{
+                    expect(text).toEqual("Bad request")
+                })
+            });
         });
     }); 
 });
