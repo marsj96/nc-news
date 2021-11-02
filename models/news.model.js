@@ -117,3 +117,12 @@ exports.fetchCommentsByArticleId = (id) => {
         } 
     })
 }
+
+exports.fetchArticles = () => {
+
+    return db.query(`SELECT * FROM articles`)
+    .then(({rows})=>{
+        return rows
+    })
+
+}
