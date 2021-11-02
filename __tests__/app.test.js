@@ -157,6 +157,18 @@ describe('APP', () => {
             });
         });
     }); 
+    describe('/api/articles', () => {
+        describe('GET request', () => {
+            it('Status - 200, should respond with an array of article objects, each with their correct properties', () => {
+                return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then(({rows})=>{
+                    console.log(rows)
+                })       
+            });
+        });
+    });
     describe('/api/articles/:article_id/comments', () => {
         describe('GET Request', () => {
             it('Status - 200, Should respond with an array of comments for the given article_id, which each of the corresponding properties for comments', () => {
