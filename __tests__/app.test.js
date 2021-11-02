@@ -159,12 +159,13 @@ describe('APP', () => {
     }); 
     describe('/api/articles', () => {
         describe('GET request', () => {
-            it('Status - 200, should respond with an array of article objects, each with their correct properties', () => {
+            it('Status - 200, should respond with an array of article objects, each with their correct properties, including comment count', () => {
                 return request(app)
                 .get('/api/articles')
                 .expect(200)
                 .then(({body})=>{
                     expect(body.articles).toHaveLength(12)
+                    expect(body.articles[0].comment_count).toEqual(11)
                     body.articles.forEach((article)=>{
                         expect(article).toMatchObject({
                             article_id: expect.any(Number),
