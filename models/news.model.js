@@ -40,14 +40,12 @@ exports.fetchArticleById = (id) => {
 exports.changeArticleById = (id, votes) => {
 
     const inc_votes = votes.inc_votes
-
-    const length = checkObjectLength(votes) 
     
-    if(length === 0 || length > 1) {
+    if(checkObjectLength(votes) != 1){
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
-    if(id.match(/\D/)) {
+    if(id.match(/\D/) || inc_votes.toString().match(/\D/)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
@@ -61,7 +59,7 @@ exports.changeArticleById = (id, votes) => {
             return article[0]
         })
     }
-    })
+})
 
     
 

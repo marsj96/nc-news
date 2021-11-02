@@ -66,7 +66,6 @@ describe('APP', () => {
                 .send(vote)
                 .expect(201)
                 .then(({body: {article}})=>{
-                    console.log(article)
                     expect(article).toMatchObject({
                         article_id: expect.any(Number),
                         title: expect.any(String),
@@ -92,6 +91,26 @@ describe('APP', () => {
             it('Status - 400, Should respond with bad request when passed an article_id that is not a number', () => {
                 return request(app)
                 .get('/api/articles/not-a-number!')
+                .expect(400)
+                .then(({text})=>{
+                    expect(text).toEqual("Bad request")
+                })
+            });
+            it('Status - 400 (patch), Should respond with bad request when passed an object with a length that is not equal to 1', () => {
+                const testObj = {inc_votes: 200, name: "Jack"}
+                return request(app)
+                .patch('/api/articles/3')
+                .send(testObj)
+                .expect(400)
+                .then(({text})=>{
+                    expect(text).toEqual("Bad request")
+                })
+            });
+            it('Status - 400 (patch), Should respond with a bad request when pased an invalid inc_votes value', () => {
+                const testObj = {inc_votes: "not-a-number"}
+                return request(app)
+                .patch('/api/articles/3')
+                .send(testObj)
                 .expect(400)
                 .then(({text})=>{
                     expect(text).toEqual("Bad request")
