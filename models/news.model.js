@@ -124,6 +124,7 @@ exports.fetchArticles = () => {
 
     const comment_count = 0
 
+    //returns an array of all articles from DB and then maps a comment_count = 0 to each object within the array
     const articlesPromise = db.query(`SELECT * FROM articles`)
     .then(({rows})=>{
         const articleWithCommentsCount = rows.map((article)=>{
@@ -141,6 +142,7 @@ exports.fetchArticles = () => {
         return articleWithCommentsCount
     })
 
+    //returns all comments within the DB
     const commentsPromise = db.query(`SELECT * FROM comments`)
     .then(({rows})=>{
         return rows
@@ -148,9 +150,12 @@ exports.fetchArticles = () => {
 
     const promiseArray = [articlesPromise, commentsPromise]
 
+    //returns the array of articles with the comment_count includes
     return Promise.all(promiseArray)
     .then(([articles, comments])=>{
+        //iterate through each comment in the array
         comments.forEach((comment)=>{
+            //map to a new array incrementing by +1 each time the article.article_id matches the comment.article_id
             articles.map((article)=>{
                 if(comment.article_id === article.article_id) {
                     article.comment_count++
