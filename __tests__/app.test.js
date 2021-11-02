@@ -18,7 +18,6 @@ describe('APP', () => {
                     expect(body.error).toEqual("Invalid URL")
                 })
             });
-        
     });
     describe('/api/topics', () => {
         describe('GET Request', () => {
@@ -59,8 +58,27 @@ describe('APP', () => {
             });
         });
         describe('PATCH', () => {
-            it('Status - 201, Should respond with the article with the updated vote count', () => {
+            it('Status - 201, Should respond with the article with the incremented vote count', () => {
                 const vote = { "inc_votes" : 150 }
+                return request(app)
+                .patch('/api/articles/4')
+                .send(vote)
+                .expect(201)
+                .then(({body: {article}})=>{
+                    expect(article).toMatchObject({
+                        article_id: expect.any(Number),
+                        title: expect.any(String),
+                        body: expect.any(String),
+                        votes: expect.any(Number),
+                        topic: expect.any(String),
+                        author: expect.any(String),
+                        created_at: expect.any(String)
+                    })
+                    expect(article.votes).toEqual(vote.inc_votes)
+                })
+            });
+            it('Status - 201, Should respond with the article with the decremented vote count', () => {
+                const vote = { "inc_votes" : -150 }
                 return request(app)
                 .patch('/api/articles/4')
                 .send(vote)

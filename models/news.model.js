@@ -50,20 +50,25 @@ exports.changeArticleById = (id, votes) => {
     if(checkObjectLength(votes) != 1){
         return Promise.reject({status: 400, msg: "Bad request"})
     }
-
-    //checks that the passed body and id are both digits
-    if(id.match(/\D/) || inc_votes.toString().match(/\D/)) {
+    
+    //checks that the property on inc_votes is a number
+    if(typeof inc_votes !== "number") {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
-    //Selects the article where article id = the id passed into the request
+    //checks that the passed id is a digit
+    if(id.match(/\D/)) {
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+
+    //selects the article where article id = the id passed into the request
     return db.query(`SELECT FROM articles WHERE article_id = $1`, [id])
     .then(({rows})=>{
-    //Checks if the returned body has length (if the article_id exists)
+    //checks if the returned body has length (if the article_id exists)
     if(rows.length === 0) {
         return Promise.reject({status:404, msg: "Not found"})
     } else {
-    //Returns the entire article with the vote digiti added onto the original votes value
+    //returns the entire article with the vote digiti added onto the original votes value
         return db.query(`UPDATE articles SET votes = votes+$1 WHERE article_id = $2 RETURNING *`, [inc_votes, id])
         .then(({rows: article})=>{
             return article[0]
