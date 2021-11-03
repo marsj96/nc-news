@@ -121,7 +121,7 @@ exports.fetchCommentsByArticleId = (id) => {
     })
 }
 
-exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
+exports.fetchArticles = (sort_by = "created_at", order) => {
 
     let articlesQuery = 
     `SELECT articles.*,
@@ -134,13 +134,14 @@ exports.fetchArticles = (sort_by = "created_at", order = "desc") => {
     const validSortBy = ["title", "article_id", "topic", "votes", "comment_count", "created_at"]
     const validOrder = ["ASC", "DESC", "asc", "desc"]
 
-    if(!validSortBy.includes(sort_by) && !order) {
+    if(!validSortBy.includes(sort_by)) {
         return Promise.reject({status: 400, msg: "Bad request"})
-    } else {
+    } else if(!order ){
         return checksSortBy(sort_by, articlesQuery)
         .then(({rows})=>{
         return rows
         })
     }
+
 
 }
