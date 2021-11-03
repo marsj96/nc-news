@@ -138,11 +138,6 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
     if(!validSortBy.includes(sort_by)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     } 
-
-    //checks if the passed order is an accepted SQL query
-    if(!validOrder.includes(order) && !filter) {
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
     
     //directs to the sort_by function when no order/filter are passed
     if(!order && !filter) {
@@ -150,6 +145,11 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
         .then(({rows})=>{
         return rows
         })
+    }
+
+    //checks if the passed order is an accepted SQL query
+    if(!validOrder.includes(order) && !filter) {
+        return Promise.reject({status: 400, msg: "Bad request"})
     }
 
     //checks for order passed in and queries the database with that order

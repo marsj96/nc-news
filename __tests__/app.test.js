@@ -266,6 +266,27 @@ describe('APP', () => {
                     expect(body.articles).toBeSortedBy(body.articles.created_at)
                 })
             });
+            describe('ERRORS', () => {
+                it('Status 400, should respond with bad request when passed a order query that is not a argument', () => {
+                    return request(app)
+                    .get('/api/articles?order=price')
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
+            });
+        });
+        describe('GET request - with queries (filter)', () => {
+            it('Status - 200, should respond with an ordered array of objects, filtered by a keyword passed in', () => {
+                return request(app)
+                .get('/api/articles?filter=cats')
+                .expect(200)
+                .then(({body: {articles}})=>{
+                    console.log(articles)
+                    expect(articles[0].topic).toEqual("cats")
+                })
+            });
         });
     });
     describe('/api/articles/:article_id/comments', () => {
