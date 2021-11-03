@@ -178,14 +178,14 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
             return db.query(`SELECT * FROM topics WHERE slug = $1;`, [filter])
     .then(({rows})=>{
         if(rows[0] !== undefined) {
-            return {msg: "There are no articles related to this topic, yet!"}
-            } else {
-                return Promise.reject({status: 400, msg: "Bad request"})
-                }
-            })
-        }       
+            return {msg: `There are no articles related to this topic, yet!`}
+        } else {
+            return Promise.reject({status: 400, msg: "Bad request"})
+        }
+    })
+    }       
         return rows
-        })
+    })
     }
 
 }
