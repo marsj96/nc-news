@@ -155,6 +155,14 @@ describe('APP', () => {
                         expect(text).toEqual("Bad request")
                     })
                 });
+                it('Status - 400 (patch), Should respond with bad request when passed an article_id that does not exist in the DB', () => {
+                    return request(app)
+                    .get('/api/articles/999')
+                    .expect(404)
+                    .then(({text})=>{
+                        expect(text).toEqual("Not found")
+                    })
+                });
             });
         });
     }); 
@@ -181,7 +189,7 @@ describe('APP', () => {
                 })       
             });
         });
-        describe('GET request - with queries', () => {
+        describe('GET request - with queries (sort_by)', () => {
             it('Status - 200, should respond with an ordered array of objects, ordered default by date', () => {
                 return request(app)
                 .get('/api/articles')
