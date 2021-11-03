@@ -1,6 +1,13 @@
 const { checkObjectLength, checksSortBy } = require("../utils");
 require('jest-sorted');
 const db = require('../db/connection.js');
+const seed = require('../db/seeds/seed.js');
+
+beforeEach(() => seed(testData));
+
+jest.setTimeout(() => {
+    
+}, 10000);
 
 describe('Utility functions', () => {
     describe('Check object length', () => {

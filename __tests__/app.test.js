@@ -249,6 +249,16 @@ describe('APP', () => {
                 });
             });
         });
+        describe('GET request - with queries (order)', () => {
+            it('Status - 200, should respond with an ordered array of objects, ordered by ASC', () => {
+                return request(app)
+                .get('/api/articles?order=ASC')
+                .expect(200)
+                .then(({body})=>{
+                    expect(body.articles).toBeSortedBy(body.articles.created_at)
+                })
+            });
+        });
     });
     describe('/api/articles/:article_id/comments', () => {
         describe('GET Request', () => {
