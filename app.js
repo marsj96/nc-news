@@ -1,5 +1,5 @@
 const express = require('express');
-const { handles404, handles400, handles500 } = require('./errors/error.controller');
+const { handles404, handles400, handles500, handlesPSQL } = require('./errors/error.controller');
 const app = express();
 const apiRouter = require('./routes/api.router');
 
@@ -13,6 +13,8 @@ app.all("*", (req, res) => {
 
 app.use(handles400)
 app.use(handles404)
+app.use(handlesPSQL)
 app.use(handles500)
+
 
 module.exports = app

@@ -203,6 +203,9 @@ exports.postComment = (id, body, username) => {
         .then(({rows})=>{
             return rows[0]
         })
+        .catch((err)=>{
+            return Promise.reject({err: 23504, msg: "User does not exist"})
+        })
 
     
 }
