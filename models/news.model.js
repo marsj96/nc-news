@@ -136,12 +136,25 @@ exports.fetchArticles = (sort_by = "created_at", order) => {
 
     if(!validSortBy.includes(sort_by)) {
         return Promise.reject({status: 400, msg: "Bad request"})
-    } else if(!order ){
+    } else if(!order) {
         return checksSortBy(sort_by, articlesQuery)
         .then(({rows})=>{
         return rows
         })
     }
 
+    if(!validOrder.includes(order)) {
+        return Promise.reject({status: 400, msg: "Bad request"})
+    } else if(order === "ASC") {
+        return db.query(`SELECT * FROM articles ORDER BY created_at ASC;`)
+        .then(({rows})=>{
+            return rows
+        })
+    } else if(order === "DESC") {
+        return db.query(`SELECT * FROM articles ORDER BY created_at DESC;`)
+        .then(({rows})=>{
+            return rows
+        })
+    }
 
 }
