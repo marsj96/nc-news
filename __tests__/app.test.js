@@ -2,6 +2,7 @@ const db = require('../db/connection.js');
 const { expect } = require('@jest/globals');
 const request = require('supertest')
 const testData = require('../db/data/test-data/index.js');
+require('jest-sorted');
 const seed = require('../db/seeds/seed.js');
 const app = require('../app');
 const articles = require('../db/data/test-data/articles.js');
@@ -165,7 +166,6 @@ describe('APP', () => {
                 .expect(200)
                 .then(({body})=>{
                     expect(body.articles).toHaveLength(12)
-                    expect(body.articles[10].comment_count).toEqual("11")
                     body.articles.forEach((article)=>{
                         expect(article).toMatchObject({
                             article_id: expect.any(Number),
@@ -175,10 +175,21 @@ describe('APP', () => {
                             topic: expect.any(String),
                             author: expect.any(String),
                             created_at: expect.any(String),
-                            comment_count: expect.any(Number)
+                            comment_count: expect.any(String)
                         })
                     })
                 })       
+            });
+        });
+        describe('GET request - with queries', () => {
+            it('Status - 200, should respond with an ordered array of objects, ordered default by date', () => {
+                return request(app)
+                .get('/api/articles')
+                .expect(200)
+                .then(({body})=>{
+                    console.log(body)
+                    expect(body.articles).toBeSortedBy(body.articles.created_at)
+                })
             });
         });
     });
