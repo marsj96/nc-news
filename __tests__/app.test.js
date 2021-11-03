@@ -258,6 +258,14 @@ describe('APP', () => {
                     expect(body.articles).toBeSortedBy(body.articles.created_at)
                 })
             });
+            it('Status - 200, should respond with an ordered array of objects, ordered by DESC', () => {
+                return request(app)
+                .get('/api/articles?order=DESC')
+                .expect(200)
+                .then(({body})=>{
+                    expect(body.articles).toBeSortedBy(body.articles.created_at)
+                })
+            });
         });
     });
     describe('/api/articles/:article_id/comments', () => {
