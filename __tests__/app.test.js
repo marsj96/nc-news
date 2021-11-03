@@ -343,6 +343,21 @@ describe('APP', () => {
                 });
             });
         });
+        describe('POST request', () => {
+            it('Status 201, should respond with the comment passed as "body" within the article specified', () => {
+                const comment = {
+                    username: "Jack",
+                    body: "My first comment!"
+                }
+                return request(app)
+                .post('/api/articles/2/comments')
+                .send(comment)
+                .expect(201)
+                .then(({rows})=>{
+                    expect(rows.body).toEqual("My first comment!")
+                })
+            });
+        });
     });
 });
 
