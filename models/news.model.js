@@ -123,6 +123,7 @@ exports.fetchCommentsByArticleId = (id) => {
 
 exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
+    //defines SQL query for us throughout this function
     let articlesQuery = 
     `SELECT articles.*,
     COUNT(comments.article_id) AS comment_count
@@ -131,6 +132,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
     ON articles.article_id = comments.article_id 
     GROUP BY articles.article_id`
 
+    //defines accepted terms for sort_by and order
     const validSortBy = ["title", "article_id", "topic", "votes", "comment_count", "created_at"]
     const validOrder = ["ASC", "DESC", "asc", "desc"]
 
@@ -168,14 +170,21 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
         })
     }
 
-    //checks for filter passed in and returns the specified topic. If the rows is empty, rejects promise
+    //checks for filter passed in and returns the specified topic. If the rows is empty and topic doesn't exist, rejects promise
     if(filter) {
         return db.query(`SELECT * FROM articles WHERE articles.topic = $1`, [filter])
-        .then(({rows})=>{
-            if(rows.length === 0) {
+    .then(({rows})=>{
+        if(rows.length === 0) {
+            return db.query(`SELECT * FROM topics WHERE slug = $1;`, [filter])
+    .then(({rows})=>{
+        if(rows[0] !== undefined) {
+            return {msg: "There are no articles related to this topic, yet!"}
+            } else {
                 return Promise.reject({status: 400, msg: "Bad request"})
-            }
-            return rows
+                }
+            })
+        }       
+        return rows
         })
     }
 
