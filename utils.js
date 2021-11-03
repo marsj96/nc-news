@@ -32,4 +32,8 @@ exports.checksSortBy = (sortByQuery, queryString) => {
     if(sortByQuery === "comment_count") {
         return db.query(queryString += ` ORDER BY comment_count DESC`)
     }
+
+    if(sortByQuery === "created_at") {
+        return db.query(queryString += ` ORDER BY comment_count DESC`)
+    }
 }
