@@ -121,7 +121,7 @@ exports.fetchCommentsByArticleId = (id) => {
     })
 }
 
-exports.fetchArticles = (sort_by = "created_at", order) => {
+exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
     let articlesQuery = 
     `SELECT articles.*,
@@ -134,25 +134,47 @@ exports.fetchArticles = (sort_by = "created_at", order) => {
     const validSortBy = ["title", "article_id", "topic", "votes", "comment_count", "created_at"]
     const validOrder = ["ASC", "DESC", "asc", "desc"]
 
+    //checks if the sort_by excists as column within our DB
     if(!validSortBy.includes(sort_by)) {
         return Promise.reject({status: 400, msg: "Bad request"})
-    } else if(!order) {
+    } 
+
+    //checks if the passed order is an accepted SQL query
+    if(!validOrder.includes(order) && !filter) {
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+    
+    //directs to the sort_by function when no order/filter are passed
+    if(!order && !filter) {
         return checksSortBy(sort_by, articlesQuery)
         .then(({rows})=>{
         return rows
         })
     }
 
-    if(!validOrder.includes(order)) {
-        return Promise.reject({status: 400, msg: "Bad request"})
-    } else if(order === "ASC") {
+    //checks for order passed in and queries the database with that order
+    if(order === "ASC" || order === "asc" && !filter) {
         return db.query(`SELECT * FROM articles ORDER BY created_at ASC;`)
         .then(({rows})=>{
             return rows
         })
-    } else if(order === "DESC") {
+    }
+    
+    //checks for order passed in and queries the database with that order
+    if(order === "DESC" || order === "desc" && !filter) {
         return db.query(`SELECT * FROM articles ORDER BY created_at DESC;`)
         .then(({rows})=>{
+            return rows
+        })
+    }
+
+    //checks for filter passed in and returns the specified topic. If the rows is empty, rejects promise
+    if(filter) {
+        return db.query(`SELECT * FROM articles WHERE articles.topic = $1`, [filter])
+        .then(({rows})=>{
+            if(rows.length === 0) {
+                return Promise.reject({status: 400, msg: "Bad request"})
+            }
             return rows
         })
     }
