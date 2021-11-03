@@ -283,9 +283,26 @@ describe('APP', () => {
                 .get('/api/articles?filter=cats')
                 .expect(200)
                 .then(({body: {articles}})=>{
-                    console.log(articles)
                     expect(articles[0].topic).toEqual("cats")
                 })
+            });
+            it('Status - 200, should respond with an empty object when topic exists but there are not posts related to it', () => {
+                return request(app)
+                .get('/api/articles?filter=paper')
+                .expect(200)
+                .then(({body})=>{
+                    expect(body.articles).toEqual({ msg: 'There are no articles related to this topic, yet!' })
+                })
+            });
+            describe('ERRORS', () => {
+                it('Status - 400, should respond with bad request when topic does not exist within DB', () => {
+                    return request(app)
+                    .get('/api/articles?filter=notAFilter')
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
             });
         });
     });
