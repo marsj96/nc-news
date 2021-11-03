@@ -191,6 +191,15 @@ describe('APP', () => {
                     expect(body.articles).toBeSortedBy(body.articles.created_at)
                 })
             });
+            it('Status - 200, should respond with an ordered array of objects, ordered by title', () => {
+                return request(app)
+                .get('/api/articles?sort_by=title')
+                .expect(200)
+                .then(({body})=>{
+                    console.log(body)
+                    expect(body.articles).toBeSortedBy(body.articles.title)
+                })
+            });
         });
     });
     describe('/api/articles/:article_id/comments', () => {
