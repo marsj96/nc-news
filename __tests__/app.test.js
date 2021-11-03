@@ -187,7 +187,6 @@ describe('APP', () => {
                 .get('/api/articles')
                 .expect(200)
                 .then(({body})=>{
-                    console.log(body)
                     expect(body.articles).toBeSortedBy(body.articles.created_at)
                 })
             });
@@ -196,7 +195,6 @@ describe('APP', () => {
                 .get('/api/articles?sort_by=title')
                 .expect(200)
                 .then(({body})=>{
-                    console.log(body)
                     expect(body.articles).toBeSortedBy(body.articles.title)
                 })
             });
@@ -205,7 +203,6 @@ describe('APP', () => {
                 .get('/api/articles?sort_by=article_id')
                 .expect(200)
                 .then(({body})=>{
-                    console.log(body)
                     expect(body.articles).toBeSortedBy(body.articles.article_id)
                 })
             });
@@ -214,7 +211,6 @@ describe('APP', () => {
                 .get('/api/articles?sort_by=topic')
                 .expect(200)
                 .then(({body})=>{
-                    console.log(body)
                     expect(body.articles).toBeSortedBy(body.articles.topic)
                 })
             });
@@ -223,7 +219,6 @@ describe('APP', () => {
                 .get('/api/articles?sort_by=votes')
                 .expect(200)
                 .then(({body})=>{
-                    console.log(body)
                     expect(body.articles).toBeSortedBy(body.articles.votes)
                 })
             });
@@ -232,7 +227,6 @@ describe('APP', () => {
                 .get('/api/articles?sort_by=comment_count')
                 .expect(200)
                 .then(({body})=>{
-                    console.log(body)
                     expect(body.articles).toBeSortedBy(body.articles.comment_count)
                 })
             });

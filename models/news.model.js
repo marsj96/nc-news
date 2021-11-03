@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const { sort } = require('../db/data/test-data/articles')
 const articles = require('../db/data/test-data/articles')
 const comments = require('../db/data/test-data/comments')
 const articlesRouter = require('../routes/articles.router')
@@ -130,6 +131,14 @@ exports.fetchArticles = (sort_by) => {
     ON articles.article_id = comments.article_id 
     GROUP BY articles.article_id`
 
+    if(sort_by === "title") {
+        return db.query(articlesQuery += ` ORDER BY title ASC`)
+        .then(({rows})=>{
+            return rows
+        })
+    }
+
+    //handles sort_by default to be created_at DESC, so newest posts first unless specified differentl in the query
     if(!sort_by) {
         return db.query(articlesQuery += ` ORDER BY created_at DESC`)
         .then(({rows})=>{

@@ -44,7 +44,10 @@ exports.getCommentsByArticleId = (req, res, next) => {
 }
 
 exports.getArticles = (req, res, next) => {
-    fetchArticles()
+
+    const {sort_by} = req.query
+
+    fetchArticles(sort_by)
     .then((articles)=>{
         res.status(200).send({articles: articles})
     })
