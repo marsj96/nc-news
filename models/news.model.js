@@ -138,6 +138,34 @@ exports.fetchArticles = (sort_by) => {
         })
     }
 
+    if(sort_by === "article_id") {
+        return db.query(articlesQuery += ` ORDER BY article_id ASC`)
+        .then(({rows})=>{
+            return rows
+        })
+    }
+
+    if(sort_by === "topic") {
+        return db.query(articlesQuery += ` ORDER BY topic ASC`)
+        .then(({rows})=>{
+            return rows
+        })
+    }
+
+    if(sort_by === "votes") {
+        return db.query(articlesQuery += ` ORDER BY votes ASC`)
+        .then(({rows})=>{
+            return rows
+        })
+    }
+
+    if(sort_by === "comment_count") {
+        return db.query(articlesQuery += ` ORDER BY comment_count ASC`)
+        .then(({rows})=>{
+            return rows
+        })
+    }
+
     //handles sort_by default to be created_at DESC, so newest posts first unless specified differentl in the query
     if(!sort_by) {
         return db.query(articlesQuery += ` ORDER BY created_at DESC`)
