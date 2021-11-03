@@ -238,6 +238,16 @@ describe('APP', () => {
                     expect(body.articles).toBeSortedBy(body.articles.comment_count)
                 })
             });
+            describe('ERRORS', () => {
+                it('Status 400, should respond with bad request when passed a sort_by query that is not a valid column', () => {
+                    return request(app)
+                    .get('/api/articles?sort_by=invalid_column')
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
+            });
         });
     });
     describe('/api/articles/:article_id/comments', () => {
