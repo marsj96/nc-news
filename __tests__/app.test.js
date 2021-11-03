@@ -165,7 +165,7 @@ describe('APP', () => {
                 .expect(200)
                 .then(({body})=>{
                     expect(body.articles).toHaveLength(12)
-                    expect(body.articles[0].comment_count).toEqual(11)
+                    expect(body.articles[10].comment_count).toEqual("11")
                     body.articles.forEach((article)=>{
                         expect(article).toMatchObject({
                             article_id: expect.any(Number),
