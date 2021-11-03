@@ -3,7 +3,7 @@ const { sort } = require('../db/data/test-data/articles')
 const articles = require('../db/data/test-data/articles')
 const comments = require('../db/data/test-data/comments')
 const articlesRouter = require('../routes/articles.router')
-const { checkObjectLength } = require('../utils')
+const { checkObjectLength, checksSortBy } = require('../utils')
 
 exports.fetchTopics = () => {
     return db.query("SELECT * FROM topics;")
@@ -131,57 +131,12 @@ exports.fetchArticles = (sort_by = "created_at") => {
     ON articles.article_id = comments.article_id 
     GROUP BY articles.article_id`
 
-    console.log(sort_by)
-
     if(!["title", "article_id", "topic", "votes", "comment_count", "created_at"].includes(sort_by)) {
         return Promise.reject({status: 400, msg: "Bad request"})
-    }
-
-    //sorts by title ASC
-    if(sort_by === "title") {
-        return db.query(articlesQuery += ` ORDER BY title ASC`)
+    } else {
+        return checksSortBy(sort_by, articlesQuery)
         .then(({rows})=>{
-            return rows
-        })
-    }
-
-    //sorts by topic article_id ASC
-    if(sort_by === "article_id") {
-        return db.query(articlesQuery += ` ORDER BY article_id ASC`)
-        .then(({rows})=>{
-            return rows
-        })
-    }
-
-    //sorts by topic ASC
-    if(sort_by === "topic") {
-        return db.query(articlesQuery += ` ORDER BY topic ASC`)
-        .then(({rows})=>{
-            return rows
-        })
-    }
-
-    //sorts by votes DESC, as we want the highest comment_counts first
-    if(sort_by === "votes") {
-        return db.query(articlesQuery += ` ORDER BY votes DESC`)
-        .then(({rows})=>{
-            return rows
-        })
-    }
-
-    //sort_by comment_count DESC, as we want the highest comment_counts first
-    if(sort_by === "comment_count") {
-        return db.query(articlesQuery += ` ORDER BY comment_count DESC`)
-        .then(({rows})=>{
-            return rows
-        })
-    }
-
-    //handles sort_by default to be created_at DESC, so newest posts first unless specified differentl in the query
-    if(sort_by === "created_at") {
-        return db.query(articlesQuery += ` ORDER BY created_at DESC`)
-        .then(({rows})=>{
-            return rows
-        })
+        return rows
+    })
     }
 }
