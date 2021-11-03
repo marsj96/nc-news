@@ -61,6 +61,7 @@ exports.sendComment = (req, res, next) => {
 
     postComment(id, body, username)
     .then((comment)=>{
-        console.log(comment)
+        res.status(201).send({username: comment.author, body: comment.body})
     })
+    .catch(next)
 }

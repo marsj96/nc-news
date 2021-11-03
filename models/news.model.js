@@ -193,14 +193,16 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
 exports.postComment = (id, body, username) => {
 
-
+    
     return db.query(
         `INSERT INTO comments
         (body, votes, author, article_id)
         VALUES
         ($1, 0, $2, $3) RETURNING *`, 
         [body, username, id])
-    .then(({rows})=>{
-        return rows
-    })
+        .then(({rows})=>{
+            return rows[0]
+        })
+
+    
 }
