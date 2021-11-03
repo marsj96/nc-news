@@ -10,6 +10,10 @@ const comments = require('../db/data/test-data/comments.js');
 
 beforeEach(() => seed(testData));
 
+jest.setTimeout(() => {
+    
+}, 10000);
+
 describe('APP', () => {
     describe('/', () => {
             it('Status - 404, Should respond with invalid url when passed an incorrect URL', () => {
@@ -325,7 +329,7 @@ describe('APP', () => {
                 })
             });
             describe('ERRORS', () => {
-                it('Status 404, Should respond with status 404 and Not found when passed an article_id that does not exist', () => {
+                it('Status - 404, Should respond with status 404 and Not found when passed an article_id that does not exist', () => {
                     return request(app)
                     .get('/api/articles/999/comments')
                     .expect(404)
@@ -333,7 +337,7 @@ describe('APP', () => {
                         expect(text).toEqual("Not found")
                     })
                 });
-                it('Status 400, Should respond with status 404 and bad request when passed an article_id that is not a digit', () => {
+                it('Status - 400, Should respond with status 404 and bad request when passed an article_id that is not a digit', () => {
                     return request(app)
                     .get('/api/articles/not-a-digit/comments')
                     .expect(400)
@@ -346,16 +350,44 @@ describe('APP', () => {
         describe('POST request', () => {
             it('Status 201, should respond with the comment passed as "body" within the article specified', () => {
                 const comment = {
-                    username: "Jack",
+                    username: "icellusedkars",
                     body: "My first comment!"
                 }
                 return request(app)
                 .post('/api/articles/2/comments')
                 .send(comment)
                 .expect(201)
-                .then(({rows})=>{
-                    expect(rows.body).toEqual("My first comment!")
+                .then(({body})=>{
+                    expect(body).toEqual({username: 'icellusedkars', body: 'My first comment!'})
                 })
+            });
+            describe('ERRORS', () => {
+                it('Status - 400, should respond with bad request when passed invalid user into the request body', () => {
+                    const comment = {
+                        username: "Not a user",
+                        body: "Not gonna work!"
+                    }
+                    return request(app)
+                    .post('/api/articles/2/comments')
+                    .send(comment)
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
+                it('Status - 400, should respond with bad request when passed invalid user article_id', () => {
+                    const comment = {
+                        username: "icellusedkars",
+                        body: "Not gonna work!"
+                    }
+                    return request(app)
+                    .post('/api/articles/55/comments')
+                    .send(comment)
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
             });
         });
     });

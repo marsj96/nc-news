@@ -185,7 +185,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
         }
     })
     }       
-        return rows
+    return rows
     })
     }
 
@@ -193,7 +193,10 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
 exports.postComment = (id, body, username) => {
 
-    
+    if(id.match(/\D/)) {
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+
     return db.query(
         `INSERT INTO comments
         (body, votes, author, article_id)
@@ -204,7 +207,11 @@ exports.postComment = (id, body, username) => {
             return rows[0]
         })
         .catch((err)=>{
-            return Promise.reject({err: 23504, msg: "User does not exist"})
+            console.log(err)
+            console.log(err.code)
+            if (err.code === '23503') {
+                return Promise.reject({err: 23503, msg: "Bad request"})
+            }   
         })
 
     
