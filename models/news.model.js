@@ -120,17 +120,20 @@ exports.fetchCommentsByArticleId = (id) => {
     })
 }
 
-exports.fetchArticles = () => {
+exports.fetchArticles = (sort_by) => {
 
-    return db.query(`
-    SELECT articles.*,
+    let articlesQuery = 
+    `SELECT articles.*,
     COUNT(comments.article_id) AS comment_count
     FROM articles 
     LEFT JOIN comments 
     ON articles.article_id = comments.article_id 
-    GROUP BY articles.article_id;`)
-    .then(({rows})=>{
-        return rows
-    })
-   
+    GROUP BY articles.article_id`
+
+    if(!sort_by) {
+        return db.query(articlesQuery += ` ORDER BY created_at DESC`)
+        .then(({rows})=>{
+            return rows
+        })
+    }
 }
