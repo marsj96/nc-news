@@ -200,6 +200,42 @@ describe('APP', () => {
                     expect(body.articles).toBeSortedBy(body.articles.title)
                 })
             });
+            it('Status - 200, should respond with an ordered array of objects, ordered by article_id', () => {
+                return request(app)
+                .get('/api/articles?sort_by=article_id')
+                .expect(200)
+                .then(({body})=>{
+                    console.log(body)
+                    expect(body.articles).toBeSortedBy(body.articles.article_id)
+                })
+            });
+            it('Status - 200, should respond with an ordered array of objects, ordered by topic', () => {
+                return request(app)
+                .get('/api/articles?sort_by=topic')
+                .expect(200)
+                .then(({body})=>{
+                    console.log(body)
+                    expect(body.articles).toBeSortedBy(body.articles.topic)
+                })
+            });
+            it('Status - 200, should respond with an ordered array of objects, ordered by votes', () => {
+                return request(app)
+                .get('/api/articles?sort_by=votes')
+                .expect(200)
+                .then(({body})=>{
+                    console.log(body)
+                    expect(body.articles).toBeSortedBy(body.articles.votes)
+                })
+            });
+            it('Status - 200, should respond with an ordered array of objects, ordered by comment_count', () => {
+                return request(app)
+                .get('/api/articles?sort_by=comment_count')
+                .expect(200)
+                .then(({body})=>{
+                    console.log(body)
+                    expect(body.articles).toBeSortedBy(body.articles.comment_count)
+                })
+            });
         });
     });
     describe('/api/articles/:article_id/comments', () => {
