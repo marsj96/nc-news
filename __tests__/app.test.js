@@ -5,8 +5,6 @@ const testData = require('../db/data/test-data/index.js');
 require('jest-sorted');
 const seed = require('../db/seeds/seed.js');
 const app = require('../app');
-const articles = require('../db/data/test-data/articles.js');
-const comments = require('../db/data/test-data/comments.js');
 
 beforeEach(() => seed(testData));
 
