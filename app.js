@@ -7,6 +7,10 @@ app.use(express.json());
 
 app.use('/api', apiRouter)
 
+app.all('/'), (req, res) =>{
+    res.status(200).send({msg: "Please visit https://nc-news-reddit.herokuapp.com/api"})
+}
+
 app.all("*", (req, res) => {
     res.status(404).send({error: "Invalid URL"})
 })
