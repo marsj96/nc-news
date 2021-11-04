@@ -36,4 +36,8 @@ exports.checksSortBy = (sortByQuery, queryString) => {
     if(sortByQuery === "created_at") {
         return db.query(queryString += ` ORDER BY created_at DESC`)
     }
+
+    if(sortByQuery === "author") {
+        return db.query(queryString += ` ORDER BY author ASC`)
+    }
 }
