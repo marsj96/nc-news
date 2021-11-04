@@ -1,4 +1,4 @@
-const { fetchTopics, fetchArticleById, changeArticleById, fetchCommentsByArticleId, fetchArticles, postComment } = require("../models/news.model")
+const { fetchTopics, fetchArticleById, changeArticleById, fetchCommentsByArticleId, fetchArticles, postComment, removeComment } = require("../models/news.model")
 
 exports.getTopics = (req, res, next) => {
     fetchTopics()
@@ -64,4 +64,14 @@ exports.sendComment = (req, res, next) => {
         res.status(201).send({username: comment.author, body: comment.body})
     })
     .catch(next)
+}
+
+exports.deleteComment = (req, res, next) => {
+
+    const {comment_id} = req.params
+
+    removeComment(comment_id)
+    .then(()=>{
+        res.status(204).send()
+    })
 }
