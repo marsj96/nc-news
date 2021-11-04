@@ -75,7 +75,7 @@ exports.changeArticleById = (id, votes) => {
     if(rows.length === 0) {
         return Promise.reject({status:404, msg: "Not found"})
     } else {
-    //returns the entire article with the vote digiti added onto the original votes value
+    //returns the entire article with the vote digit added onto the original votes value
         return db.query(`UPDATE articles SET votes = votes+$1 WHERE article_id = $2 RETURNING *`, [inc_votes, id])
         .then(({rows: article})=>{
             return article[0]
@@ -127,7 +127,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
     GROUP BY articles.article_id;`
 
     //defines accepted terms for sort_by and order
-    const validSortBy = ["title", "article_id", "topic", "votes", "comment_count", "created_at"]
+    const validSortBy = ["title", "article_id", "topic", "votes", "comment_count", "created_at", "author"]
     const validOrder = ["ASC", "DESC", "asc", "desc"]
 
     //checks if the sort_by excists as column within our DB
@@ -220,5 +220,11 @@ exports.removeComment = (id) => {
     return db.query(
         `DELETE FROM comments
         WHERE comment_id = $1`, [id])
-        
+
+}
+
+exports.fetchApi = () => {
+
+    return fs.read
+
 }
