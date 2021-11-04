@@ -140,7 +140,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
     //checks for order passed in and queries the database with that order
     if(order === "ASC" || order === "asc" && !filter) {
-        return db.query(`SELECT * FROM articles ORDER BY created_at ASC;`)
+        return db.query(articlesQuery += ` ORDER BY created_at ASC`)
         .then(({rows})=>{
             return rows
         })
@@ -148,29 +148,39 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
     
     //checks for order passed in and queries the database with that order
     if(order === "DESC" || order === "desc" && !filter) {
-        return db.query(`SELECT * FROM articles ORDER BY created_at DESC;`)
+        return db.query(articlesQuery += ` ORDER BY created_at ASC`)
         .then(({rows})=>{
             return rows
         })
     }
 
+        
     //checks for filter passed in and returns the specified topic. If the rows is empty and topic doesn't exist, rejects promise
+
+
     if(filter) {
-        return db.query(`SELECT * FROM articles WHERE articles.topic = $1`, [filter])
-    .then(({rows})=>{
-        if(rows.length === 0) {
-            return db.query(`SELECT * FROM topics WHERE slug = $1;`, [filter])
-    .then(({rows})=>{
-        if(rows[0] !== undefined) {
-            return {msg: `There are no articles related to this topic, yet!`}
-        } else {
-            return Promise.reject({status: 400, msg: "Bad request"})
-        }
-    })
-    }       
-    return rows
-    })
+        return db.query(`
+        SELECT articles.*,
+        COUNT(comments.article_id) AS comment_count
+        FROM articles 
+        LEFT JOIN comments 
+        ON articles.article_id = comments.article_id  
+        WHERE articles.topic = $1`, [filter])
+        .then(({rows})=>{
+            if(rows.length === 0) {
+                return db.query(`SELECT * FROM topics WHERE slug = $1;`, [filter])
+                .then(({rows})=>{
+                    if(rows[0] !== undefined) {
+                        return {msg: `There are no articles related to this topic, yet!`}
+                    } else {
+                        return Promise.reject({status: 400, msg: "Bad request"})
+                    }
+                })
+            }
+        return rows
+        })
     }
+
 
 }
 
