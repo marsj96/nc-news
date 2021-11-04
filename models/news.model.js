@@ -107,7 +107,7 @@ exports.fetchCommentsByArticleId = (id) => {
 
 exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
-    //defines SQL query for us throughout this function
+    //defines SQL query for use throughout this function
     let articlesQuery = 
     `SELECT articles.*,
     COUNT(comments.article_id) AS comment_count
@@ -116,6 +116,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
     ON articles.article_id = comments.article_id 
     GROUP BY articles.article_id`
 
+    //defines filter query as we will need to place the WHERE condition before the GROUP BY
     let filterQuery = 
     `SELECT articles.*,
     COUNT(comments.article_id) AS comment_count
@@ -163,23 +164,26 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
         })
     }
 
-        
     //checks for filter passed in and returns the specified topic. If the rows is empty and topic doesn't exist, rejects promise
-
-
     if(filter) {
+        //returns db query with all articles with matching topic
         return db.query(filterQuery, [filter])
         .then(({rows})=>{
+            //checks if the return has a length of 0
             if(rows.length === 0) {
+                //checks if the topic passed is within the DB
                 return db.query(`SELECT * FROM topics WHERE slug = $1;`, [filter])
                 .then(({rows})=>{
+                    //if query comes back as undefined, the topic does not any articles related to it
                     if(rows[0] !== undefined) {
                         return {msg: `There are no articles related to this topic, yet!`}
                     } else {
+                        //if not, we reject and throw a bad request error as topic does not exist
                         return Promise.reject({status: 400, msg: "Bad request"})
                     }
                 })
             }
+            //if length is not 0, returns rows (articles related to topic)
         return rows
         })
     }
