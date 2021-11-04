@@ -1,9 +1,4 @@
-const format = require('pg-format')
 const db = require('../db/connection')
-const { sort } = require('../db/data/test-data/articles')
-const articles = require('../db/data/test-data/articles')
-const comments = require('../db/data/test-data/comments')
-const articlesRouter = require('../routes/articles.router')
 const { checkObjectLength, checksSortBy } = require('../utils')
 
 exports.fetchTopics = () => {
