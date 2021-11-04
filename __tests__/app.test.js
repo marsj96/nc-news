@@ -387,6 +387,15 @@ describe('APP', () => {
             });
         });
     });
+    describe('/api/comments/:comment_id', () => {
+        describe('DELETE requests', () => {
+            it('Status - 204, should remove the comment id passed into the path', () => {
+                return request(app)
+                .delete('/api/comments/3')
+                .expect(204)
+            });
+        });
+    });
 });
 
 afterAll(() => db.end());
