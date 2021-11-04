@@ -116,6 +116,15 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
     ON articles.article_id = comments.article_id 
     GROUP BY articles.article_id`
 
+    let filterQuery = 
+    `SELECT articles.*,
+    COUNT(comments.article_id) AS comment_count
+    FROM articles 
+    LEFT JOIN comments 
+    ON articles.article_id = comments.article_id 
+    WHERE articles.topic = $1
+    GROUP BY articles.article_id;`
+
     //defines accepted terms for sort_by and order
     const validSortBy = ["title", "article_id", "topic", "votes", "comment_count", "created_at"]
     const validOrder = ["ASC", "DESC", "asc", "desc"]
@@ -148,7 +157,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
     
     //checks for order passed in and queries the database with that order
     if(order === "DESC" || order === "desc" && !filter) {
-        return db.query(articlesQuery += ` ORDER BY created_at ASC`)
+        return db.query(articlesQuery += ` ORDER BY created_at DESC`)
         .then(({rows})=>{
             return rows
         })
@@ -159,13 +168,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
 
     if(filter) {
-        return db.query(`
-        SELECT articles.*,
-        COUNT(comments.article_id) AS comment_count
-        FROM articles 
-        LEFT JOIN comments 
-        ON articles.article_id = comments.article_id  
-        WHERE articles.topic = $1`, [filter])
+        return db.query(filterQuery, [filter])
         .then(({rows})=>{
             if(rows.length === 0) {
                 return db.query(`SELECT * FROM topics WHERE slug = $1;`, [filter])
