@@ -100,24 +100,12 @@ exports.fetchCommentsByArticleId = (id) => {
     }
 
     //returns the commments when the passed article_id matches the passed id
-    return db.query(`SELECT * FROM comments WHERE article_id = $1`, [id])
+    return db.query(`SELECT comment_id, votes, created_at, author, body FROM comments WHERE article_id = $1`, [id])
     .then(({rows})=>{
-
-    //checks if the rows returned has a length of greater than  0, if not the article does not have any comments/does not exists
     if(rows.length === 0) {
         return Promise.reject({status:404, msg: "Not found"})
     } else {
-        //iterates through each of the comments to take out the article_id
-        const commentArr = rows.map((comment)=>{
-            return {
-                comment_id: comment.comment_id,
-                author: comment.author,
-                votes: comment.votes,
-                created_at: comment.created_at,
-                body: comment.body
-            }
-        })
-        return commentArr
+        return rows
         } 
     })
 }
@@ -207,8 +195,6 @@ exports.postComment = (id, body, username) => {
             return rows[0]
         })
         .catch((err)=>{
-            console.log(err)
-            console.log(err.code)
             if (err.code === '23503') {
                 return Promise.reject({err: 23503, msg: "Bad request"})
             }   

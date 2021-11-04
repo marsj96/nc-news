@@ -10,10 +10,6 @@ const comments = require('../db/data/test-data/comments.js');
 
 beforeEach(() => seed(testData));
 
-jest.setTimeout(() => {
-    
-}, 10000);
-
 describe('APP', () => {
     describe('/', () => {
             it('Status - 404, Should respond with invalid url when passed an incorrect URL', () => {
