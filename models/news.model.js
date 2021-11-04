@@ -1,5 +1,6 @@
 const db = require('../db/connection')
 const { checkObjectLength, checksSortBy } = require('../utils')
+const {promises: {readFile}, fstat} = require("fs");
 
 exports.fetchTopics = () => {
     return db.query("SELECT * FROM topics;")
@@ -225,6 +226,9 @@ exports.removeComment = (id) => {
 
 exports.fetchApi = () => {
 
-    return fs.read
-
+    return readFile('endpoints.json', 'utf-8')
+    .then((apiJson)=>{
+        return apiJson
+    })
+        
 }
