@@ -75,3 +75,7 @@ exports.deleteComment = (req, res, next) => {
         res.status(204).send()
     })
 }
+
+exports.getApi = (req, res, next) => {
+    
+}
