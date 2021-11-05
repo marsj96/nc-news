@@ -1,9 +1,8 @@
 const db = require('../db/connection')
 const { checkObjectLength, checksSortBy } = require('../utils')
-const {promises: {readFile}, fstat} = require("fs");
 
 exports.fetchTopics = () => {
-    
+
     return db.query("SELECT * FROM topics;")
     .then(({rows: topics})=>{
         return topics
@@ -24,7 +23,7 @@ exports.fetchArticleById = (id) => {
             if(rows.length === 0) {
                 return Promise.reject({status:404, msg: "Not found"})
             } else {
-                return rows
+                return rows[0]
             }      
         })
 
@@ -47,7 +46,7 @@ exports.changeArticleById = (id, votes) => {
     return db.query(`UPDATE articles SET votes = votes+$1 WHERE article_id = $2 RETURNING *`, [inc_votes, id])
     .then(({rows})=>{
         if(rows.length > 0) {
-            return rows
+            return rows[0]
         } else {
             return Promise.reject({status:404, msg: "Not found"})
         }
@@ -74,7 +73,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
     `SELECT articles.*,
     COUNT(comments.article_id) AS comment_count
     FROM articles 
-    LEFT JOIN comments 
+    LEFT OUTER JOIN comments 
     ON articles.article_id = comments.article_id 
     GROUP BY articles.article_id`
 
@@ -155,10 +154,6 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
 exports.postComment = (id, body, username) => {
 
-    if((/\D/).test(id)) {
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
-
     return db.query(
         `INSERT INTO comments
         (body, votes, author, article_id)
@@ -168,20 +163,9 @@ exports.postComment = (id, body, username) => {
         .then(({rows})=>{
             return rows[0]
         })
-        .catch((err)=>{
-            if (err.code === '23503') {
-                return Promise.reject({err: 23503, msg: "Bad request"})
-            }   
-        })
-
-    
 }
 
 exports.removeComment = (id) => {
-
-    if((/\D/).test(id)) {
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
 
     return db.query(
         `SELECT comment_id FROM comments
@@ -195,6 +179,5 @@ exports.removeComment = (id) => {
             return Promise.reject({status: 404, msg: "Not found"})
         }
     })
-
 }
     
