@@ -279,17 +279,17 @@ describe('APP', () => {
                 return request(app)
                 .get('/api/articles?filter=paper')
                 .expect(200)
-                .then(({body})=>{
-                    expect(body.articles).toEqual({ msg: 'There are no articles related to this topic, yet!' })
+                .then((body)=>{
+                    expect(body.text).toEqual("Article does not exist")
                 })
             });
             describe('ERRORS', () => {
                 it('Status - 400, should respond with bad request when topic does not exist within DB', () => {
                     return request(app)
                     .get('/api/articles?filter=notAFilter')
-                    .expect(400)
+                    .expect(404)
                     .then(({text})=>{
-                        expect(text).toEqual("Bad request")
+                        expect(text).toEqual("Not found")
                     })
                 });
             });
