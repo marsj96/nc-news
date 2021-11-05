@@ -187,12 +187,23 @@ describe('APP', () => {
                     expect(body.articles).toBeSortedBy(body.articles.created_at)
                 })
             });
-            it('Status - 200, should respond with an ordered array of objects, ordered by title', () => {
+            it('Status - 200, should respond with an ordered array of objects, ordered by title DESC', () => {
                 return request(app)
                 .get('/api/articles?sort_by=title')
                 .expect(200)
                 .then(({body})=>{
+                    console.log(body)
                     expect(body.articles).toBeSortedBy(body.articles.title)
+                })
+            });
+            it('Status - 200, should respond with an ordered array of objects, ordered by author DESC', () => {
+                return request(app)
+                .get('/api/articles?sort_by=author')
+                .expect(200)
+                .then(({body})=>{
+                    const testBody = body.articles[0]
+                    expect(testBody.author).toEqual("rogersop")
+                    expect(body.articles).toBeSortedBy(body.articles.author)
                 })
             });
             it('Status - 200, should respond with an ordered array of objects, ordered by article_id', () => {
@@ -275,21 +286,33 @@ describe('APP', () => {
                     expect(articles[0].topic).toEqual("cats")
                 })
             });
+            it('Status - 200, should respond with an ordered array of objects, filtered by a keyword passed in with each article returned having the topic correct topic value', () => {
+                return request(app)
+                .get('/api/articles?filter=mitch')
+                .expect(200)
+                .then(({body: {articles}})=>{
+                    expect(articles[0].topic).toEqual("mitch")
+                    articles.forEach((article)=>{
+                        expect(article.topic).toEqual("mitch")
+                    })
+                })
+            });
             it('Status - 200, should respond with an empty object when topic exists but there are not posts related to it', () => {
                 return request(app)
                 .get('/api/articles?filter=paper')
                 .expect(200)
                 .then((body)=>{
-                    expect(body.text).toEqual("Article does not exist")
+                    expect(body.body).toEqual([])
                 })
             });
             describe('ERRORS', () => {
-                it('Status - 400, should respond with bad request when topic does not exist within DB', () => {
+                it.only('Status - 400, should respond with bad request when topic does not exist within DB', () => {
                     return request(app)
                     .get('/api/articles?filter=notAFilter')
                     .expect(404)
-                    .then(({text})=>{
-                        expect(text).toEqual("Not found")
+                    .then((body)=>{
+                        console.log(body)
+                        expect(body.res.statusMessage).toEqual("Not Found")
                     })
                 });
             });
