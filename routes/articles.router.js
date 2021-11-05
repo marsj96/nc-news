@@ -1,4 +1,5 @@
-const { getArticleById, patchArticleById, getCommentsByArticleId, getArticles, sendComment } = require('../controllers/news.controller')
+const { getArticles, getArticleById, patchArticleById } = require('../controllers/articles.controller')
+const { getCommentsByArticleId, sendComment } = require('../controllers/comments.controller')
 
 const articlesRouter = require('express').Router()
 
