@@ -12,7 +12,7 @@ exports.fetchTopics = () => {
 exports.fetchArticleById = (id) => {
 
     //checks if the id passed is a digit
-    if(id.match(/\D/)) {
+    if((/\D/).test(id)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
