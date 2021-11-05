@@ -1,0 +1,1 @@
+endpointRouter.route('/').delete(getApi)

@@ -1,8 +1,5 @@
-const { fetchApi } = require("../models/news.model")
+const endpointJSON = require('../endpoints.json')
 
 exports.getApi = (req, res, next) => {
-    fetchApi()
-    .then((apiJson)=>{
-        res.status(200).send(apiJson)
-    })
+    res.status(200).send(endpointJSON)
 }
