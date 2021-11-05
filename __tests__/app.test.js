@@ -42,8 +42,8 @@ describe('APP', () => {
                 return request(app)
                 .get('/api/articles/2')
                 .expect(200)
-                .then(({body: {article}})=>{
-                    expect(article).toMatchObject({
+                .then(({body})=>{
+                    expect(body.articles).toMatchObject({
                         article_id: expect.any(Number),
                         title: expect.any(String),
                         body: expect.any(String),
@@ -81,9 +81,9 @@ describe('APP', () => {
                 return request(app)
                 .patch('/api/articles/4')
                 .send(vote)
-                .expect(201)
-                .then(({body: {article}})=>{
-                    expect(article).toMatchObject({
+                .expect(200)
+                .then(({body})=>{
+                    expect(body.articles).toMatchObject({
                         article_id: expect.any(Number),
                         title: expect.any(String),
                         body: expect.any(String),
@@ -92,7 +92,7 @@ describe('APP', () => {
                         author: expect.any(String),
                         created_at: expect.any(String)
                     })
-                    expect(article.votes).toEqual(vote.inc_votes)
+                    expect(body.articles.votes).toEqual(vote.inc_votes)
                 })
             });
             it('Status - 201, Should respond with the article with the decremented vote count', () => {
@@ -100,9 +100,9 @@ describe('APP', () => {
                 return request(app)
                 .patch('/api/articles/4')
                 .send(vote)
-                .expect(201)
-                .then(({body: {article}})=>{
-                    expect(article).toMatchObject({
+                .expect(200)
+                .then(({body})=>{
+                    expect(body.articles).toMatchObject({
                         article_id: expect.any(Number),
                         title: expect.any(String),
                         body: expect.any(String),
@@ -111,7 +111,7 @@ describe('APP', () => {
                         author: expect.any(String),
                         created_at: expect.any(String)
                     })
-                    expect(article.votes).toEqual(vote.inc_votes)
+                    expect(body.articles.votes).toEqual(vote.inc_votes)
                 })
             });
             describe('ERRORS', () => {
@@ -352,7 +352,7 @@ describe('APP', () => {
                 .send(comment)
                 .expect(201)
                 .then(({body})=>{
-                    expect(body).toEqual({username: 'icellusedkars', body: 'My first comment!'})
+                    expect(body).toEqual({username: 'icellusedkars', comment_id: 19, body: 'My first comment!'})
                 })
             });
             describe('ERRORS', () => {
