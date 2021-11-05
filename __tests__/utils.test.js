@@ -1,40 +1,46 @@
-const { checkObjectLength, checksSortBy } = require("../utils");
+const { checkDB, checksSortByDesc } = require("../utils");
 require('jest-sorted');
+const { expect } = require('@jest/globals');
 const db = require('../db/connection.js');
 const seed = require('../db/seeds/seed.js');
+const testData = require('../db/data/test-data/index.js');
+const request = require('supertest')
+const app = require("../app");
 
 beforeEach(() => seed(testData));
 
-jest.setTimeout(() => {
-    
-}, 10000);
-
 describe('Utility functions', () => {
-    describe('Check object length', () => {
-        it('Should return the length of the passed object into the function', () => {
-            const testObj = { name: "Jack", age: 25, language: "Javascript"}
-            expect(checkObjectLength(testObj)).toEqual(3)
+    describe('checkDB', () => {
+        it('Queries DB to check if topic exists but only when there is no articles related to it', () => {
+            const test = "paper"
+            return request(app)
+            .get('/api/articles?filter=paper')
+            .expect(200)
+            .then((rows)=>{
+                expect(rows.text).toEqual("Article does not exist")
+            })
         });
-        
-    });
-    describe('Checks sort_by query', () => {
-
-        it('Should return an array of article objects sorted by title', () => {
-            const sort_by = "title"
-            let queryString = 
-            `SELECT articles.*,
-            COUNT(comments.article_id) AS comment_count
-            FROM articles 
-            LEFT JOIN comments 
-            ON articles.article_id = comments.article_id 
-            GROUP BY articles.article_id`
-
-            checksSortBy(sort_by, queryString)
-            .then(({rows: articles})=>{
-                expect(articles).toBeSortedBy(articles[sort_by])
+        it('Queries DB to check if topic exists but only when there is no articles related to it', () => {
+            const test = "paper"
+            return request(app)
+            .get('/api/articles?filter=notvalid')
+            .expect(404)
+            .then((rows)=>{
+                expect(rows.text).toEqual("Not found")
             })
         });
         
+    });
+    describe('checkSortedByDesc', () => {
+        it('Takes a sort_by query and outputs the correct db query', () => {
+            const sort_by = "author"
+            return request(app)
+            .get(`/api/articles?sort_by=${sort_by}`)
+            .expect(200)
+            .then((rows)=>{
+                expect(rows.body.articles).toBeSortedBy(rows.body.articles[sort_by])
+            })
+        });
     });
 });
 
