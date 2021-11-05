@@ -17,14 +17,14 @@ const seed = (data) => {
   .then(()=>{
     return db.query(`
       CREATE TABLE topics (
-        slug VARCHAR PRIMARY KEY NOT NULL UNIQUE,
+        slug VARCHAR PRIMARY KEY NOT NULL,
         description VARCHAR(100) NOT NULL
       )`)
   })
   .then(()=>{
     return db.query(`
     CREATE TABLE users (
-      username VARCHAR PRIMARY KEY NOT NULL UNIQUE,
+      username VARCHAR PRIMARY KEY NOT NULL,
       avatar_URL VARCHAR,
       name VARCHAR NOT NULL
     )`)
