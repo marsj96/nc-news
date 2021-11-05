@@ -3,6 +3,7 @@ const { checkObjectLength, checksSortBy } = require('../utils')
 const {promises: {readFile}, fstat} = require("fs");
 
 exports.fetchTopics = () => {
+    
     return db.query("SELECT * FROM topics;")
     .then(({rows: topics})=>{
         return topics
@@ -11,18 +12,14 @@ exports.fetchTopics = () => {
 
 exports.fetchArticleById = (id) => {
 
-    //checks if the id passed is a digit
-    if((/\D/).test(id)) {
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
-
     return db.query(
         `SELECT articles.*,
         COUNT(comments.article_id) AS comment_count
         FROM articles 
         LEFT JOIN comments 
         ON articles.article_id = comments.article_id 
-        GROUP BY articles.article_id`)
+        WHERE articles.article_id = $1
+        GROUP BY articles.article_id`, [id])
         .then(({rows})=>{
             if(rows.length === 0) {
                 return Promise.reject({status:404, msg: "Not found"})
@@ -42,46 +39,22 @@ exports.changeArticleById = (id, votes) => {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
     
-    //checks that the passed body only has 1 property
-    if(checkObjectLength(votes) != 1){
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
-    
     //checks that the property on inc_votes is a number
     if(typeof inc_votes !== "number") {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
-    //checks that the passed id is a digit
-    if((/\D/).test(id)) {
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
-
-    //selects the article where article id = the id passed into the request
-    return db.query(`SELECT FROM articles WHERE article_id = $1`, [id])
+    return db.query(`UPDATE articles SET votes = votes+$1 WHERE article_id = $2 RETURNING *`, [inc_votes, id])
     .then(({rows})=>{
-    //checks if the returned body has length (if the article_id exists)
-    if(rows.length === 0) {
-        return Promise.reject({status:404, msg: "Not found"})
-    } else {
-    //returns the entire article with the vote digit added onto the original votes value
-        return db.query(`UPDATE articles SET votes = votes+$1 WHERE article_id = $2 RETURNING *`, [inc_votes, id])
-        .then(({rows: article})=>{
-            return article[0]
-        })
-    }
-})
-
-    
-
+        if(rows.length > 0) {
+            return rows
+        } else {
+            return Promise.reject({status:404, msg: "Not found"})
+        }
+    })
 }
 
 exports.fetchCommentsByArticleId = (id) => {
-
-    //checks that the passed id is a digit
-    if((/\D/).test(id)) {
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
 
     //returns the commments when the passed article_id matches the passed id
     return db.query(`SELECT comment_id, votes, created_at, author, body FROM comments WHERE article_id = $1`, [id])
