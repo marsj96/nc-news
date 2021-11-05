@@ -25,7 +25,7 @@ const seed = (data) => {
     return db.query(`
     CREATE TABLE users (
       username VARCHAR PRIMARY KEY NOT NULL,
-      avatar_URL VARCHAR,
+      avatar_URL VARCHAR NOT NULL,
       name VARCHAR NOT NULL
     )`)
   })
@@ -46,8 +46,8 @@ const seed = (data) => {
     return db.query(`
       CREATE TABLE comments (
         comment_id SERIAL PRIMARY KEY,
-        author VARCHAR REFERENCES users(username),
-        article_id INT REFERENCES articles(article_id),
+        author VARCHAR REFERENCES users(username) NOT NULL,
+        article_id INT REFERENCES articles(article_id) ON DELETE CASCADE,
         votes INT DEFAULT 0,
         created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
         body VARCHAR NOT NULL
