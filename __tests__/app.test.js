@@ -430,7 +430,7 @@ describe('APP', () => {
             });
         });
     });
-    describe.only('/api/comments/:comment_id', () => {
+    describe('/api/comments/:comment_id', () => {
         describe('DELETE requests', () => {
             it('Status - 204, should remove the comment id passed into the path', () => {
                 return request(app)
@@ -441,7 +441,7 @@ describe('APP', () => {
         describe('ERRORS', () => {
             it('Status - 404, should return not found when passed an invalid article_id', () => {
                 return request(app)
-                .delete('/api/comments/3')
+                .delete('/api/comments/444')
                 .expect(404)
             });
         });
