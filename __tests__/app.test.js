@@ -51,7 +51,7 @@ describe('APP', () => {
                         topic: expect.any(String),
                         author: expect.any(String),
                         created_at: expect.any(String),
-                        comment_count: expect.any(Number)
+                        comment_count: expect.any(String)
                     })
                     
                 })
@@ -115,16 +115,7 @@ describe('APP', () => {
                 })
             });
             describe('ERRORS', () => {
-                it('Status - 400 (patch), Should respond with bad request when passed an object with a length that is not equal to 1', () => {
-                    const testObj = {inc_votes: 200, name: "Jack"}
-                    return request(app)
-                    .patch('/api/articles/3')
-                    .send(testObj)
-                    .expect(400)
-                    .then(({text})=>{
-                        expect(text).toEqual("Bad request")
-                    })
-                });
+
                 it('Status - 400 (patch), Should respond with a bad request when pased an invalid inc_votes value', () => {
                     const testObj = {inc_votes: "not-a-number"}
                     return request(app)
@@ -356,7 +347,7 @@ describe('APP', () => {
                 })
             });
             describe('ERRORS', () => {
-                it('Status - 400, should respond with bad request when passed invalid user into the request body', () => {
+                it('Status - 404, should respond with not found when passed invalid user into the request body', () => {
                     const comment = {
                         username: "Not a user",
                         body: "Not gonna work!"
@@ -364,9 +355,9 @@ describe('APP', () => {
                     return request(app)
                     .post('/api/articles/2/comments')
                     .send(comment)
-                    .expect(400)
+                    .expect(404)
                     .then(({text})=>{
-                        expect(text).toEqual("Bad request")
+                        expect(text).toEqual("Not found")
                     })
                 });
                 it('Status - 400, should respond with bad request when passed invalid user article_id', () => {
@@ -377,9 +368,9 @@ describe('APP', () => {
                     return request(app)
                     .post('/api/articles/55/comments')
                     .send(comment)
-                    .expect(400)
+                    .expect(404)
                     .then(({text})=>{
-                        expect(text).toEqual("Bad request")
+                        expect(text).toEqual("Not found")
                     })
                 });
             });
