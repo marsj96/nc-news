@@ -237,14 +237,3 @@ exports.removeComment = (id) => {
 
 }
     
-    
-
-   
-exports.fetchApi = () => {
-
-    return readFile('endpoints.json', 'utf-8')
-    .then((apiJson)=>{
-        return apiJson
-    })
-        
-}
