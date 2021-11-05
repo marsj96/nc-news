@@ -19,13 +19,15 @@ exports.handles400 = (err, req, res, next) => {
 exports.handlesPSQL = (err, req, res, next) => {
     if(err.err === 23503 && err.msg == "Bad request") {
         res.status(400).send(err.msg)
+    } else if (err.code === "22P02") {
+        res.status(400).send("Bad request")
     } else {
         next(err)
     }
 }
 
 exports.handles500 = (err, req, res, next) => {
-    console.log(err)
+    console.log("Inside 500:", err)
     res.status(500).send({msg: "Internal server error"})
 }
 
