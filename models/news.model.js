@@ -34,13 +34,14 @@ exports.changeArticleById = (id, votes) => {
 
     const inc_votes = votes.inc_votes
 
+    //checks if request body is empty and returns article_id as unchanged if so
     if (Object.keys(votes).length === 0) {
         return db.query(`SELECT * FROM articles WHERE article_id = $1`, [id])
         .then(({rows})=>{
             return rows
         })
     }
-    
+
     //checks if the passed body has the property "inc votes"
     if(!votes.hasOwnProperty("inc_votes")) {
         return Promise.reject({status: 400, msg: "Bad request"})
@@ -127,9 +128,9 @@ exports.postComment = (id, body, username) => {
 
     return db.query(
         `INSERT INTO comments
-        (body, votes, author, article_id)
+        (body, author, article_id)
         VALUES
-        ($1, 0, $2, $3) RETURNING *`, 
+        ($1, $2, $3) RETURNING *`, 
         [body, username, id])
         .then(({rows})=>{
             return rows[0]
@@ -141,14 +142,11 @@ exports.removeComment = (id) => {
     return db.query(
         `SELECT comment_id FROM comments
         WHERE comment_id = $1`, [id])
-    .then(({rows})=>{
-        if(rows.length > 0){
-            return db.query(
-                `DELETE FROM comments
-                WHERE comment_id = $1`, [id])
-        } else {
-            return Promise.reject({status: 404, msg: "Not found"})
-        }
-    })
+        .then(({rows})=>{
+            if(rows.length === 0) {
+                return Promise.reject({status:404, msg: "Not found"})
+            }
+        })
+
 }
     
