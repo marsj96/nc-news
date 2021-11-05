@@ -42,14 +42,6 @@ exports.checksSortByDesc = (sortByQuery, queryString) => {
     }
 }
 
-exports.checksSortByAsc = (sortByQuery, queryString) => {
-
-    if(sortByQuery === "created_at") {
-        return db.query(queryString += ` GROUP BY articles.article_id ORDER BY created_at ASC`)
-    }
-
-}
-
 exports.checkDB = (filter) => {
     
    return db.query(`SELECT * FROM topics WHERE slug = $1`, [filter])
