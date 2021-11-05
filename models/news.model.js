@@ -16,33 +16,21 @@ exports.fetchArticleById = (id) => {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
-    //creates a promise for the query to return the article matching the passed id
-    const articlePromise = db.query(`SELECT * FROM articles WHERE article_id = $1`, [id])
-    .then(({rows: articles})=>{
-        return articles
-    })
+    return db.query(
+        `SELECT articles.*,
+        COUNT(comments.article_id) AS comment_count
+        FROM articles 
+        LEFT JOIN comments 
+        ON articles.article_id = comments.article_id 
+        GROUP BY articles.article_id`)
+        .then(({rows})=>{
+            if(rows.length === 0) {
+                return Promise.reject({status:404, msg: "Not found"})
+            } else {
+                return rows
+            }      
+        })
 
-    //creates a promise for the query to return the comments matching the passed id
-    const commentCountPromise = db.query(`SELECT * FROM comments WHERE article_id = $1`, [id])
-    .then(({rows})=>{
-        return rows.length
-    })
-
-    //creates an array to pass into the below Promise.all
-    const promiseArray = [articlePromise, commentCountPromise]
-
-    //once the above promises have returned returns the value
-    return Promise.all(promiseArray)
-    //destructures the returned array into articles and count
-    .then(([articles, count])=>{
-        if(articles.length === 0) {
-            return Promise.reject({status:404, msg: "Not found"})
-        } else {
-            //adds the property comment_count to the article that has been returned
-            articles[0].comment_count = count
-            return articles[0]
-        }      
-    })
 }
 
 exports.changeArticleById = (id, votes) => {
@@ -65,7 +53,7 @@ exports.changeArticleById = (id, votes) => {
     }
 
     //checks that the passed id is a digit
-    if(id.match(/\D/)) {
+    if((/\D/).test(id)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
@@ -91,7 +79,7 @@ exports.changeArticleById = (id, votes) => {
 exports.fetchCommentsByArticleId = (id) => {
 
     //checks that the passed id is a digit
-    if(id.match(/\D/)) {
+    if((/\D/).test(id)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
@@ -194,7 +182,7 @@ exports.fetchArticles = (sort_by = "created_at", order, filter) => {
 
 exports.postComment = (id, body, username) => {
 
-    if(id.match(/\D/)) {
+    if((/\D/).test(id)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
@@ -218,7 +206,7 @@ exports.postComment = (id, body, username) => {
 
 exports.removeComment = (id) => {
 
-    if(id.match(/\D/)) {
+    if((/\D/).test(id)) {
         return Promise.reject({status: 400, msg: "Bad request"})
     }
 
