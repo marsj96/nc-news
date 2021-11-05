@@ -8,7 +8,7 @@ exports.handles404 = (err, req, res, next) => {
 
 exports.handles200 = (err, req, res, next) => {
     if (err.msg === "Article does not exist") {
-        res.status(200).send(err.msg)
+        res.status(200).send([])
     } else {
         next(err)
     }
