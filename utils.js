@@ -1,16 +1,5 @@
 const db = require('./db/connection')
 
-exports.checkObjectLength = (obj) => {
-    let length = 0;
-
-    for (key in obj) {
-        if (obj.hasOwnProperty(key)) {
-            length++
-        }
-    }
-    return length
-}
-
 exports.checksSortByDesc = (sortByQuery, queryString) => {
 
     if(sortByQuery === "title") {
