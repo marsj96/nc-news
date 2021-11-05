@@ -1,1 +1,1 @@
-endpointRouter.route('/').delete(getApi)
+endpointRouter.route('/').get(getApi)
