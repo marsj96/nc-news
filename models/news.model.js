@@ -218,6 +218,10 @@ exports.postComment = (id, body, username) => {
 
 exports.removeComment = (id) => {
 
+    if(id.match(/\D/)) {
+        return Promise.reject({status: 400, msg: "Bad request"})
+    }
+
     return db.query(
         `SELECT comment_id FROM comments
         WHERE comment_id = $1`, [id])
