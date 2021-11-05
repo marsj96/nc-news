@@ -126,6 +126,24 @@ describe('APP', () => {
                         expect(text).toEqual("Bad request")
                     })
                 });
+                it('Status - 200 (patch), Should respond with the original body when passed no request body', () => {
+                    const testObj = {}
+                    return request(app)
+                    .patch('/api/articles/3')
+                    .send(testObj)
+                    .expect(200)
+                    .then(({body})=>{
+                        expect(body.articles[0]).toMatchObject({
+                            article_id: expect.any(Number),
+                            author: expect.any(String),
+                            body: expect.any(String),
+                            created_at: expect.any(String),
+                            title: expect.any(String),
+                            topic: expect.any(String),
+                            votes: expect.any(Number)
+                        })
+                    })
+                });
                 it('Status - 400 (patch), Should respond with bad request when the request body does not contain "inc_votes"', () => {
                     const testObj = {not_inc_votes: 25}
                     return request(app)
@@ -306,7 +324,7 @@ describe('APP', () => {
                 })
             });
             describe('ERRORS', () => {
-                it.only('Status - 400, should respond with bad request when topic does not exist within DB', () => {
+                it('Status - 400, should respond with bad request when topic does not exist within DB', () => {
                     return request(app)
                     .get('/api/articles?filter=notAFilter')
                     .expect(404)
@@ -383,13 +401,26 @@ describe('APP', () => {
                         expect(text).toEqual("Not found")
                     })
                 });
-                it('Status - 400, should respond with bad request when passed invalid user article_id', () => {
+                it('Status - 400, should respond with bad request when passed not all properties in request body', () => {
+                    const comment = {
+                        username: "Not a user"
+
+                    }
+                    return request(app)
+                    .post('/api/articles/2/comments')
+                    .send(comment)
+                    .expect(400)
+                    .then(({text})=>{
+                        expect(text).toEqual("Bad request")
+                    })
+                });
+                it.only('Status - 400, should respond with bad request when passed invalid user article_id', () => {
                     const comment = {
                         username: "icellusedkars",
                         body: "Not gonna work!"
                     }
                     return request(app)
-                    .post('/api/articles/55/comments')
+                    .post('/api/articles/999/comments')
                     .send(comment)
                     .expect(404)
                     .then(({text})=>{
@@ -399,12 +430,19 @@ describe('APP', () => {
             });
         });
     });
-    describe('/api/comments/:comment_id', () => {
+    describe.only('/api/comments/:comment_id', () => {
         describe('DELETE requests', () => {
             it('Status - 204, should remove the comment id passed into the path', () => {
                 return request(app)
                 .delete('/api/comments/3')
                 .expect(204)
+            });
+        });
+        describe('ERRORS', () => {
+            it('Status - 404, should return not found when passed an invalid article_id', () => {
+                return request(app)
+                .delete('/api/comments/3')
+                .expect(404)
             });
         });
     });
