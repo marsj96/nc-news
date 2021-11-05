@@ -1,5 +1,3 @@
-const { restart } = require("nodemon")
-
 exports.handles404 = (err, req, res, next) => {
     if (err.status = 404 && err.msg === "Not found") {
         res.status(404).send(err.msg)
