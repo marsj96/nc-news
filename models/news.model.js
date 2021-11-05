@@ -1,5 +1,6 @@
 const db = require('../db/connection')
-const { checkObjectLength, checksSortBy } = require('../utils')
+const articles = require('../db/data/test-data/articles')
+const { checkObjectLength, checksSortBy, checksSortByDesc, checksSortByAsc } = require('../utils')
 
 exports.fetchTopics = () => {
 
@@ -66,89 +67,61 @@ exports.fetchCommentsByArticleId = (id) => {
     })
 }
 
-exports.fetchArticles = (sort_by = "created_at", order, filter) => {
-
-    //defines SQL query for use throughout this function
-    let articlesQuery = 
-    `SELECT articles.*,
-    COUNT(comments.article_id) AS comment_count
-    FROM articles 
-    LEFT OUTER JOIN comments 
-    ON articles.article_id = comments.article_id 
-    GROUP BY articles.article_id`
-
-    //defines filter query as we will need to place the WHERE condition before the GROUP BY
-    let filterQuery = 
-    `SELECT articles.*,
-    COUNT(comments.article_id) AS comment_count
-    FROM articles 
-    LEFT JOIN comments 
-    ON articles.article_id = comments.article_id 
-    WHERE articles.topic = $1
-    GROUP BY articles.article_id;`
+exports.fetchArticles = (sort_by = "created_at", order = "DESC", filter) => {
 
     //defines accepted terms for sort_by and order
     const validSortBy = ["title", "article_id", "topic", "votes", "comment_count", "created_at", "author"]
     const validOrder = ["ASC", "DESC", "asc", "desc"]
 
-    //checks if the sort_by excists as column within our DB
-    if(!validSortBy.includes(sort_by)) {
+    // defines SQL query for use throughout this function
+    let articlesQuery = 
+    `SELECT articles.*,
+    COUNT(comments.author) AS comment_count
+    FROM articles 
+    LEFT JOIN comments 
+    ON articles.article_id = comments.article_id`
+
+    //checks if the sort_by or order are valid
+    if(!validSortBy.includes(sort_by) || (!validOrder.includes(order))) {
         return Promise.reject({status: 400, msg: "Bad request"})
     } 
     
-    //directs to the sort_by function when no order/filter are passed
-    if(!order && !filter) {
-        return checksSortBy(sort_by, articlesQuery)
-        .then(({rows})=>{
-        return rows
-        })
-    }
-
-    //checks if the passed order is an accepted SQL query
-    if(!validOrder.includes(order) && !filter) {
-        return Promise.reject({status: 400, msg: "Bad request"})
-    }
-
-    //checks for order passed in and queries the database with that order
-    if(order === "ASC" || order === "asc" && !filter) {
-        return db.query(articlesQuery += ` ORDER BY created_at ASC`)
-        .then(({rows})=>{
-            return rows
-        })
-    }
-    
-    //checks for order passed in and queries the database with that order
-    if(order === "DESC" || order === "desc" && !filter) {
-        return db.query(articlesQuery += ` ORDER BY created_at DESC`)
-        .then(({rows})=>{
-            return rows
-        })
-    }
-
-    //checks for filter passed in and returns the specified topic. If the rows is empty and topic doesn't exist, rejects promise
+    //checks if the topic exists within the DB
     if(filter) {
-        //returns db query with all articles with matching topic
-        return db.query(filterQuery, [filter])
-        .then(({rows})=>{
-            //checks if the return has a length of 0
-            if(rows.length === 0) {
-                //checks if the topic passed is within the DB
-                return db.query(`SELECT * FROM topics WHERE slug = $1;`, [filter])
-                .then(({rows})=>{
-                    //if query comes back as undefined, the topic does not any articles related to it
-                    if(rows[0] !== undefined) {
-                        return {msg: `There are no articles related to this topic, yet!`}
-                    } else {
-                        //if not, we reject and throw a bad request error as topic does not exist
-                        return Promise.reject({status: 400, msg: "Bad request"})
-                    }
-                })
+        const topicCheck = db.query(`SELECT * FROM topics WHERE slug = $1`, [filter])
+        .then(()=>{
+            if (topicCheck.length === 0) {
+                return Promise.reject({status: 400, msg: "Bad request"})
             }
-            //if length is not 0, returns rows (articles related to topic)
-        return rows
         })
     }
 
+    //serves the articles related to the passed filter
+    if(filter) {
+        console.log(articlesQuery)
+        return db.query(articlesQuery += ` WHERE articles.topic = $1 GROUP BY articles.article_id;`, [filter])
+        .then(({rows})=>{
+            if(rows.length === 0) {
+                return Promise.reject({status: 400, msg: "Bad request"})
+            } else {
+                return rows
+            }
+        })
+    }
+
+    //checks if order is not default value
+    if(order !== "DESC") {
+        return checksSortByAsc(sort_by, articlesQuery)
+        .then(({rows})=>{
+            return rows
+        })
+    }
+
+    //returns the sort_by query, defaulted to DESC order
+    return checksSortByDesc(sort_by, articlesQuery)
+    .then(({rows})=>{
+        return rows
+    })
 
 }
 
