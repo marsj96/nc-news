@@ -1,6 +1,6 @@
 const db = require('../db/connection')
 const articles = require('../db/data/test-data/articles')
-const { checkObjectLength, checksSortBy, checksSortByDesc, checksSortByAsc, checkDB } = require('../utils')
+const { checkObjectLength, checksSortBy, checksSortByDesc, checkDB } = require('../utils')
 
 exports.fetchTopics = () => {
 
@@ -34,6 +34,13 @@ exports.changeArticleById = (id, votes) => {
 
     const inc_votes = votes.inc_votes
 
+    if (Object.keys(votes).length === 0) {
+        return db.query(`SELECT * FROM articles WHERE article_id = $1`, [id])
+        .then(({rows})=>{
+            return rows
+        })
+    }
+    
     //checks if the passed body has the property "inc votes"
     if(!votes.hasOwnProperty("inc_votes")) {
         return Promise.reject({status: 400, msg: "Bad request"})
@@ -98,19 +105,21 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", filter) => {
         })
     }
 
-    //checks if order is not default value
+    //checks if order is not default value and returns value ASC
     if(order !== "DESC") {
-        return checksSortByAsc(sort_by, articlesQuery)
+        return db.query(articlesQuery += ` GROUP BY articles.article_id ORDER BY created_at DESC`)
+        .then(({rows})=>{
+        return rows
+    })
+    }
+    
+
+    //returns the sort_by query, defaulted to DESC order
+    return checksSortByDesc(sort_by, articlesQuery)
         .then(({rows})=>{
             return rows
         })
-    }
-
-    //returns the sort_by query, defaulted to DESC order
-    return db.query(articlesQuery += ` GROUP BY articles.article_id ORDER BY created_at DESC`)
-    .then(({rows})=>{
-        return rows
-    })
+    
 
 }
 
