@@ -8,6 +8,14 @@ exports.handles404 = (err, req, res, next) => {
     }
 }
 
+exports.handles200 = (err, req, res, next) => {
+    if (err.msg === "Article does not exist") {
+        res.status(200).send(err.msg)
+    } else {
+        next(err)
+    }
+}
+
 exports.handles400 = (err, req, res, next) => {
     if (err.status === 400 && err.msg === "Bad request") {
         res.status(400).send(err.msg)
@@ -17,7 +25,6 @@ exports.handles400 = (err, req, res, next) => {
 }
 
 exports.handlesPSQL = (err, req, res, next) => {
-    console.log(err)
     if(err.code === "23503") {
         res.status(404).send("Not found")
     } else if (err.code === "22P02") {
