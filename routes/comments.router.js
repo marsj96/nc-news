@@ -1,4 +1,4 @@
-const { deleteComment } = require('../controllers/news.controller')
+const { deleteComment } = require('../controllers/comments.controller')
 
 const commentsRouter = require('express').Router()
 

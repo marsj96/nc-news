@@ -219,11 +219,23 @@ exports.postComment = (id, body, username) => {
 exports.removeComment = (id) => {
 
     return db.query(
-        `DELETE FROM comments
+        `SELECT comment_id FROM comments
         WHERE comment_id = $1`, [id])
+    .then(({rows})=>{
+        if(rows.length > 0){
+            return db.query(
+                `DELETE FROM comments
+                WHERE comment_id = $1`, [id])
+        } else {
+            return Promise.reject({status: 404, msg: "Not found"})
+        }
+    })
 
 }
+    
+    
 
+   
 exports.fetchApi = () => {
 
     return readFile('endpoints.json', 'utf-8')
