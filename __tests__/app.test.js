@@ -210,7 +210,6 @@ describe('APP', () => {
                 .get('/api/articles?sort_by=title')
                 .expect(200)
                 .then(({body})=>{
-                    console.log(body)
                     expect(body.articles).toBeSortedBy(body.articles.title)
                 })
             });
@@ -329,7 +328,6 @@ describe('APP', () => {
                     .get('/api/articles?filter=notAFilter')
                     .expect(404)
                     .then((body)=>{
-                        console.log(body)
                         expect(body.res.statusMessage).toEqual("Not Found")
                     })
                 });
@@ -401,6 +399,24 @@ describe('APP', () => {
                         expect(text).toEqual("Not found")
                     })
                 });
+                it('Status - 201, ignroed extra properties in request body', () => {
+                    const comment = {
+                        username: "icellusedkars",
+                        body: "My first comment!",
+                        extra: "Why am I here?"
+                    }
+                    return request(app)
+                    .post('/api/articles/2/comments')
+                    .send(comment)
+                    .expect(201)
+                    .then(({body})=>{
+                        expect(body).toEqual({
+                            comment_id: 19,
+                            username: "icellusedkars",
+                            body: "My first comment!"
+                        })
+                    })
+                });
                 it('Status - 400, should respond with bad request when passed not all properties in request body', () => {
                     const comment = {
                         username: "Not a user"
@@ -414,7 +430,7 @@ describe('APP', () => {
                         expect(text).toEqual("Bad request")
                     })
                 });
-                it.only('Status - 400, should respond with bad request when passed invalid user article_id', () => {
+                it('Status - 400, should respond with bad request when passed invalid user article_id', () => {
                     const comment = {
                         username: "icellusedkars",
                         body: "Not gonna work!"
