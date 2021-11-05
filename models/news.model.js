@@ -1,6 +1,6 @@
 const db = require('../db/connection')
 const articles = require('../db/data/test-data/articles')
-const { checkObjectLength, checksSortBy, checksSortByDesc, checksSortByAsc } = require('../utils')
+const { checkObjectLength, checksSortBy, checksSortByDesc, checksSortByAsc, checkDB } = require('../utils')
 
 exports.fetchTopics = () => {
 
@@ -85,24 +85,13 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", filter) => {
     if(!validSortBy.includes(sort_by) || (!validOrder.includes(order))) {
         return Promise.reject({status: 400, msg: "Bad request"})
     } 
-    
-    //checks if the topic exists within the DB
-    if(filter) {
-        const topicCheck = db.query(`SELECT * FROM topics WHERE slug = $1`, [filter])
-        .then(()=>{
-            if (topicCheck.length === 0) {
-                return Promise.reject({status: 400, msg: "Bad request"})
-            }
-        })
-    }
 
     //serves the articles related to the passed filter
     if(filter) {
-        console.log(articlesQuery)
         return db.query(articlesQuery += ` WHERE articles.topic = $1 GROUP BY articles.article_id;`, [filter])
         .then(({rows})=>{
             if(rows.length === 0) {
-                return Promise.reject({status: 400, msg: "Bad request"})
+                return checkDB(filter)
             } else {
                 return rows
             }
@@ -118,7 +107,7 @@ exports.fetchArticles = (sort_by = "created_at", order = "DESC", filter) => {
     }
 
     //returns the sort_by query, defaulted to DESC order
-    return checksSortByDesc(sort_by, articlesQuery)
+    return db.query(articlesQuery += ` GROUP BY articles.article_id ORDER BY created_at DESC`)
     .then(({rows})=>{
         return rows
     })
