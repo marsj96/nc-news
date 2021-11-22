@@ -182,108 +182,108 @@ Hints:
 ## General
 
 - [X] Remove any unnecessary `console.logs` and comments
-- [ ] Remove all unnecessary files (e.g. old `README.md`, `error-handling.md`, `hosting.md`, `./db/utils/README.md` etc.)
+- [] Remove all unnecessary files (e.g. old `README.md`, `error-handling.md`, `hosting.md`, `./db/utils/README.md` etc.)
 - [X] .gitignore the `.env` files
 
 ## Connection to db
 
-- [ ] Throw error if `process.env.PGDATABASE` is not set
+- [X] Throw error if `process.env.PGDATABASE` is not set
 
 ## Creating tables
 
-- [ ] Use `NOT NULL` on required fields
-- [ ] Default `created_at` in articles and comments tables to the current date:`TIMESTAMP DEFAULT NOW()`
-- [ ] Delete all comments when the article they are related to is deleted: Add `ON DELETE CASCADE` to `article_id` column in `comments` table.
+- [X] Use `NOT NULL` on required fields
+- [X] Default `created_at` in articles and comments tables to the current date:`TIMESTAMP DEFAULT NOW()`
+- [X] Delete all comments when the article they are related to is deleted: Add `ON DELETE CASCADE` to `article_id` column in `comments` table.
 
 ## Inserting data
 
-- [ ] Drop tables and create tables in seed function
+- [X] Drop tables and create tables in seed function
 
 ## Tests
 
-- [ ] Seeding before each test
-- [ ] If asserting inside a `forEach`, also has an assertion to check length is at least > 0
-- [ ] Ensure all tests are passing
-- [ ] Cover all endpoints and errors
+- [X] Seeding before each test
+- [X] If asserting inside a `forEach`, also has an assertion to check length is at least > 0
+- [X] Ensure all tests are passing
+- [X] Cover all endpoints and errors
 
 - `GET /api/topics`
 
-  - [ ] Status 200, array of topic objects
+  - [X] Status 200, array of topic objects
 
 - `GET /api/articles/:article_id`
 
-  - [ ] Status 200, single article object (including `comment_count`)
-  - [ ] Status 400, invalid ID, e.g. string of "not-an-id"
-  - [ ] Status 404, non existent ID, e.g. 0 or 9999
+  - [X] Status 200, single article object (including `comment_count`)
+  - [X] Status 400, invalid ID, e.g. string of "not-an-id"
+  - [X] Status 404, non existent ID, e.g. 0 or 9999
 
 - `PATCH /api/articles/:article_id`
 
-  - [ ] Status 200, updated single article object
-  - [ ] Status 400, invalid ID, e.g. string of "not-an-id"
-  - [ ] Status 404, non existent ID, e.g. 0 or 9999
-  - [ ] Status 400, missing / incorrect body, e.g. `inc_votes` property is not a number, or missing
+  - [X] Status 200, updated single article object
+  - [X] Status 400, invalid ID, e.g. string of "not-an-id"
+  - [X] Status 404, non existent ID, e.g. 0 or 9999
+  - [X] Status 400, missing / incorrect body, e.g. `inc_votes` property is not a number, or missing
 
 - `GET /api/articles`
 
   - [ ] Status 200, array of article objects (including `comment_count`, excluding `body`)
-  - [ ] Status 200, default sort & order: `created_at`, `desc`
-  - [ ] Status 200, accepts `sort_by` query, e.g. `?sort_by=votes`
-  - [ ] Status 200, accepts `order` query, e.g. `?order=desc`
-  - [ ] Status 200, accepts `topic` query, e.g. `?topic=coding`
-  - [ ] Status 400. invalid `sort_by` query, e.g. `?sort_by=bananas`
-  - [ ] Status 400. invalid `order` query, e.g. `?order=bananas`
-  - [ ] Status 404. non-existent `topic` query, e.g. `?topic=bananas`
-  - [ ] Status 200. valid `topic` query, but has no articles responds with an empty array of articles, e.g. `?topic=paper`
+  - [X] Status 200, default sort & order: `created_at`, `desc`
+  - [X] Status 200, accepts `sort_by` query, e.g. `?sort_by=votes`
+  - [X] Status 200, accepts `order` query, e.g. `?order=desc`
+  - [X] Status 200, accepts `topic` query, e.g. `?topic=coding`
+  - [X] Status 400. invalid `sort_by` query, e.g. `?sort_by=bananas`
+  - [X] Status 400. invalid `order` query, e.g. `?order=bananas`
+  - [X] Status 404. non-existent `topic` query, e.g. `?topic=bananas`
+  - [X] Status 200. valid `topic` query, but has no articles responds with an empty array of articles, e.g. `?topic=paper`
 
 - `GET /api/articles/:article_id/comments`
 
-  - [ ] Status 200, array of comment objects for the specified article
-  - [ ] Status 400, invalid ID, e.g. string of "not-an-id"
-  - [ ] Status 404, non existent ID, e.g. 0 or 9999
+  - [X] Status 200, array of comment objects for the specified article
+  - [X] Status 400, invalid ID, e.g. string of "not-an-id"
+  - [X] Status 404, non existent ID, e.g. 0 or 9999
   - [ ] Status 200, valid ID, but has no comments responds with an empty array of comments
 
 - `POST /api/articles/:article_id/comments`
 
-  - [ ] Status 201, created comment object
-  - [ ] Status 400, invalid ID, e.g. string of "not-an-id"
-  - [ ] Status 404, non existent ID, e.g. 0 or 9999
-  - [ ] Status 400, missing required field(s), e.g. no username or body properties
-  - [ ] Status 404, username does not exist
-  - [ ] Status 201, ignores unnecessary properties
+  - [X] Status 201, created comment object
+  - [X] Status 400, invalid ID, e.g. string of "not-an-id"
+  - [X] Status 404, non existent ID, e.g. 0 or 9999
+  - [X] Status 400, missing required field(s), e.g. no username or body properties
+  - [X] Status 404, username does not exist
+  - [X] Status 201, ignores unnecessary properties
 
 - `GET /api`
 
-  - [ ] Status 200, JSON describing all the available endpoints
+  - [X] Status 200, JSON describing all the available endpoints
 
 ## Routing
 
-- [ ] Split into api, topics, users, comments and articles routers
-- [ ] Use `.route` for endpoints that share the same path
+- [X] Split into api, topics, users, comments and articles routers
+- [X] Use `.route` for endpoints that share the same path
 
 ## Controllers
 
-- [ ] Name functions and variables well
-- [ ] Add catch blocks to all model invocations (and don't mix use of`.catch(next);` and `.catch(err => next(err))`)
+- [X] Name functions and variables well
+- [X] Add catch blocks to all model invocations (and don't mix use of`.catch(next);` and `.catch(err => next(err))`)
 
 ## Models
 
 - Protected from SQL injection
-  - [ ] Using parameterized queries for values in `db.query` e.g `$1` and array of variables
-  - [ ] Sanitizing any data for tables/columns, e.g. greenlisting when using template literals or pg-format's `%s`
-- [ ] Consistently use either single object argument _**or**_ multiple arguments in model functions
-- [ ] Use `LEFT JOIN` for comment counts
+  - [X] Using parameterized queries for values in `db.query` e.g `$1` and array of variables
+  - [X] Sanitizing any data for tables/columns, e.g. greenlisting when using template literals or pg-format's `%s`
+- [X] Consistently use either single object argument _**or**_ multiple arguments in model functions
+- [X] Use `LEFT JOIN` for comment counts
 
 ## Errors
 
-- [ ] Use error handling middleware functions in app and extracted to separate directory/file
-- [ ] Consistently use `Promise.reject` in either models _**OR**_ controllers
+- [X] Use error handling middleware functions in app and extracted to separate directory/file
+- [X] Consistently use `Promise.reject` in either models _**OR**_ controllers
 
 ## Extra Tasks - To be completed after hosting
 
 - `DELETE /api/comments/:comment_id`
 
-- [ ] Status 204, deletes comment from database
-- [ ] Status 404, non existant ID, e.g 999
+- [] Status 204, deletes comment from database
+- [] Status 404, non existant ID, e.g 999
 - [ ] Status 400, invalid ID, e.g "not-an-id"
 
 - `GET /api/users`
